@@ -1,15 +1,12 @@
 /*
-  NeonDB Database Layer
-  
-  Lightweight database abstraction using `pg` (node-postgres) for direct connection to NeonDB.
-  Provides a Prisma-like API for convenience but uses raw SQL queries.
-  
-  Implements:
-  - db.articulo.findUnique/findMany/create/update/delete
-  - db.categoria.findUnique/findMany/create/update/delete
-  - db.articuloCategoria.count
-  
-  The `prisma` export name is kept for backward compatibility but this is NOT Prisma ORM.
+  Lightweight Prisma-compatible shim backed by `pg` for NeonDB.
+  This implements the minimal subset of `prisma` APIs used in the app:
+  - prisma.articulo.findUnique/findMany/create/update/delete
+  - prisma.categoria.findUnique/findMany/create/update/delete
+  - prisma.articuloCategoria.count
+
+  It's intentionally small and uses raw SQL; for complex queries you can
+  expand these helpers or reintroduce Prisma later.
 */
 
 import { Pool } from "pg";
@@ -294,40 +291,20 @@ export const prisma = {
   },
 
   categoria: {
-    async findUnique({ where, include }: { where: any; include?: any }) {
-      let categoria: any = null;
-
+    async findUnique({ where }: { where: any }) {
       if (where.id) {
         const res = await query("SELECT * FROM categorias WHERE id = $1", [
           where.id,
         ]);
-        categoria = res.rows[0] ? mapRowToCategoria(res.rows[0]) : null;
-      } else if (where.slug) {
+        return res.rows[0] ? mapRowToCategoria(res.rows[0]) : null;
+      }
+      if (where.slug) {
         const res = await query("SELECT * FROM categorias WHERE slug = $1", [
           where.slug,
         ]);
-        categoria = res.rows[0] ? mapRowToCategoria(res.rows[0]) : null;
+        return res.rows[0] ? mapRowToCategoria(res.rows[0]) : null;
       }
-
-      if (!categoria) return null;
-
-      // Handle include relations
-      if (include?.articuloCategorias) {
-        const acRes = await query(
-          `SELECT ac.id, ac.articulo_id, ac.categoria_id
-           FROM articulo_categorias ac
-           WHERE ac.categoria_id = $1`,
-          [categoria.id]
-        );
-
-        (categoria as any).articuloCategorias = acRes.rows.map((row: any) => ({
-          id: row.id,
-          articuloId: row.articulo_id,
-          categoriaId: row.categoria_id,
-        }));
-      }
-
-      return categoria;
+      return null;
     },
     async findMany(opts: any = {}) {
       const order = opts.orderBy ? "ORDER BY nombre ASC" : "";

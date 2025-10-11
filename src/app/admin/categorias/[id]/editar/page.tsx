@@ -1,24 +1,28 @@
-import { Header } from "@/components/header"
-import { CategoriaForm } from "@/components/categoria-form"
-import { requireAuth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { notFound } from "next/navigation"
-import type { Metadata } from "next"
+import { Header } from "@/components/header";
+import { CategoriaForm } from "@/components/categoria-form";
+import { requireAuth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Editar Categoría | Admin",
   description: "Editar categoría existente",
-}
+};
 
-export default async function EditarCategoriaPage({ params }: { params: { id: string } }) {
-  await requireAuth()
+export default async function EditarCategoriaPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  await requireAuth();
 
   const categoria = await prisma.categoria.findUnique({
     where: { id: params.id },
-  })
+  });
 
   if (!categoria) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -29,5 +33,5 @@ export default async function EditarCategoriaPage({ params }: { params: { id: st
         <CategoriaForm categoria={categoria} />
       </main>
     </>
-  )
+  );
 }

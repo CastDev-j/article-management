@@ -1,11 +1,11 @@
-import { Header } from "@/components/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { getCategorias } from "@/app/actions/categorias"
-import { prisma } from "@/lib/prisma"
-import Link from "next/link"
-import { FolderOpen } from "lucide-react"
-import type { Metadata } from "next"
+import { Header } from "@/components/header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { getCategorias } from "@/app/actions/categorias";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
+import { FolderOpen } from "lucide-react";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Categorías | Gestión de Artículos",
@@ -17,10 +17,10 @@ export const metadata: Metadata = {
       "Explora artículos organizados por categorías. Encuentra contenido sobre tecnología, diseño, desarrollo web, marketing y negocios.",
     type: "website",
   },
-}
+};
 
 export default async function CategoriasPage() {
-  const categorias = await getCategorias()
+  const categorias = await getCategorias();
 
   const categoriasConConteo = await Promise.all(
     categorias.map(async (categoria) => {
@@ -31,10 +31,10 @@ export default async function CategoriasPage() {
             publicado: true,
           },
         },
-      })
-      return { ...categoria, count }
-    }),
-  )
+      });
+      return { ...categoria, count };
+    })
+  );
 
   return (
     <>
@@ -42,13 +42,17 @@ export default async function CategoriasPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold">Categorías</h1>
-          <p className="text-muted-foreground">Explora artículos por categoría</p>
+          <p className="text-muted-foreground">
+            Explora artículos por categoría
+          </p>
         </div>
 
         {categoriasConConteo.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No hay categorías disponibles.</p>
+              <p className="text-muted-foreground">
+                No hay categorías disponibles.
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -60,11 +64,14 @@ export default async function CategoriasPage() {
                     <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                       <FolderOpen className="h-6 w-6" />
                     </div>
-                    <CardTitle className="text-xl">{categoria.nombre}</CardTitle>
+                    <CardTitle className="text-xl">
+                      {categoria.nombre}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Badge variant="secondary">
-                      {categoria.count} {categoria.count === 1 ? "artículo" : "artículos"}
+                      {categoria.count}{" "}
+                      {categoria.count === 1 ? "artículo" : "artículos"}
                     </Badge>
                   </CardContent>
                 </Card>
@@ -74,5 +81,5 @@ export default async function CategoriasPage() {
         )}
       </main>
     </>
-  )
+  );
 }

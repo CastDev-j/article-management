@@ -79,11 +79,13 @@ export default async function AdminArticulosPage() {
                   )}
                   {(articulo as any).articuloCategorias?.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {(articulo as any).articuloCategorias.map(({ categoria }: any) => (
-                        <Badge key={categoria.id} variant="outline">
-                          {categoria.nombre}
-                        </Badge>
-                      ))}
+                      {(articulo as any).articuloCategorias.map(
+                        ({ categoria }: any) => (
+                          <Badge key={categoria.id} variant="outline">
+                            {categoria.nombre}
+                          </Badge>
+                        )
+                      )}
                     </div>
                   )}
                 </CardContent>
