@@ -3,12 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import type { ArticuloFormData } from "@/lib/types";
 
 export async function createArticulo(data: ArticuloFormData) {
-  await requireAuth(); // Solo verificamos que esté autenticado
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
+
+  console.log("Sesión de Clerk en createArticulo:", { userId });
 
   const baseSlug = generateSlug(data.titulo);
   const slug = await generateUniqueSlug(baseSlug, async (s) => {
@@ -39,7 +45,13 @@ export async function createArticulo(data: ArticuloFormData) {
 }
 
 export async function updateArticulo(id: string, data: ArticuloFormData) {
-  await requireAuth(); // Solo verificamos que esté autenticado
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
+
+  console.log("Sesión de Clerk en updateArticulo:", { userId });
 
   const articulo = await prisma.articulo.findUnique({
     where: { id },
@@ -90,7 +102,13 @@ export async function updateArticulo(id: string, data: ArticuloFormData) {
 }
 
 export async function deleteArticulo(id: string) {
-  await requireAuth(); // Solo verificamos que esté autenticado
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
+
+  console.log("Sesión de Clerk en deleteArticulo:", { userId });
 
   const articulo = await prisma.articulo.findUnique({
     where: { id },
@@ -109,7 +127,13 @@ export async function deleteArticulo(id: string) {
 }
 
 export async function togglePublicado(id: string) {
-  await requireAuth(); // Solo verificamos que esté autenticado
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
+
+  console.log("Sesión de Clerk en togglePublicado:", { userId });
 
   const articulo = await prisma.articulo.findUnique({
     where: { id },

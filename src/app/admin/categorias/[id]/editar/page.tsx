@@ -1,6 +1,6 @@
 import { Header } from "@/components/header";
 import { CategoriaForm } from "@/components/categoria-form";
-import { requireAuth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -15,7 +15,11 @@ export default async function EditarCategoriaPage({
 }: {
   params: { id: string };
 }) {
-  await requireAuth();
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
 
   const categoria = await prisma.categoria.findUnique({
     where: { id: params.id },

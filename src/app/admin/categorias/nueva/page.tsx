@@ -1,15 +1,19 @@
-import { Header } from "@/components/header"
-import { CategoriaForm } from "@/components/categoria-form"
-import { requireAuth } from "@/lib/auth"
-import type { Metadata } from "next"
+import { Header } from "@/components/header";
+import { CategoriaForm } from "@/components/categoria-form";
+import { auth } from "@clerk/nextjs/server";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Nueva Categoría | Admin",
   description: "Crear una nueva categoría",
-}
+};
 
 export default async function NuevaCategoriaPage() {
-  await requireAuth()
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
 
   return (
     <>
@@ -19,5 +23,5 @@ export default async function NuevaCategoriaPage() {
         <CategoriaForm />
       </main>
     </>
-  )
+  );
 }

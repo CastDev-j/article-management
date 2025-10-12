@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { getCategorias } from "@/app/actions/categorias";
 import { Plus, Pencil } from "lucide-react";
 import { DeleteCategoriaButton } from "@/components/delete-categoria-button";
-import { requireAuth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 
@@ -22,7 +22,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminCategoriasPage() {
-  await requireAuth();
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("No autorizado. Debes iniciar sesión.");
+  }
 
   const categorias = await getCategorias();
 
