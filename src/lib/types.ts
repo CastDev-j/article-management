@@ -5,7 +5,7 @@ export interface Articulo {
   descripcion: string | null;
   contenido: string;
   imagen: string | null;
-  autors: string[]; // Array de autores (nombres separados)
+  autors: string[];
   publicado: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -31,7 +31,7 @@ export interface ArticuloFormData {
   descripcion?: string;
   contenido: string;
   imagen?: string;
-  autors: string[]; // Array de nombres de autores
+  autors: string[];
   categorias: string[];
   publicado: boolean;
 }

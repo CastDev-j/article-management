@@ -29,7 +29,6 @@ export default async function AdminArticulosPage() {
     redirect("/");
   }
 
-  // Verificar que el usuario sea admin
   const isAdmin = await checkIsAdmin(userId);
 
   if (!isAdmin) {

@@ -18,7 +18,6 @@ export default async function NuevoArticuloPage() {
     redirect("/");
   }
 
-  // Verificar que el usuario sea admin
   const isAdmin = await checkIsAdmin(userId);
 
   if (!isAdmin) {

@@ -30,7 +30,6 @@ export default async function AdminCategoriasPage() {
     redirect("/");
   }
 
-  // Verificar que el usuario sea admin
   const isAdmin = await checkIsAdmin(userId);
 
   if (!isAdmin) {
@@ -39,7 +38,6 @@ export default async function AdminCategoriasPage() {
 
   const categorias = await getCategorias();
 
-  // Obtener conteo de artículos por categoría
   const categoriasConConteo = await Promise.all(
     categorias.map(async (categoria) => {
       const count = await prisma.articuloCategoria.count({

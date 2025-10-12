@@ -1,8 +1,10 @@
+import { checkIsAdmin } from "@/app/actions/auth";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export async function Footer() {
   const { userId } = await auth();
+  const isAdmin = await checkIsAdmin(userId);
 
   return (
     <footer className="mt-auto border-t bg-muted/50">
@@ -10,10 +12,12 @@ export async function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <h3 className="mb-4 text-lg font-semibold">Gestión de Artículos</h3>
-            <p className="text-pretty text-sm text-muted-foreground">
-              Sistema completo de gestión de artículos con categorías y búsqueda
-              avanzada.
-            </p>
+            <div>
+              <p className="text-pretty text-sm text-muted-foreground mb-3">
+                Sistema completo de gestión de artículos con categorías y
+                búsqueda avanzada.
+              </p>
+            </div>
           </div>
 
           <div>
@@ -49,7 +53,7 @@ export async function Footer() {
           <div>
             <h4 className="mb-4 text-sm font-semibold">Administración</h4>
             <ul className="space-y-2 text-sm">
-              {userId ? (
+              {isAdmin ? (
                 <>
                   <li>
                     <Link

@@ -8,7 +8,6 @@ import type { ArticuloFormData, Articulo } from "@/lib/types";
 import { requireAdmin } from "./auth";
 
 export async function createArticulo(data: ArticuloFormData) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const baseSlug = generateSlug(data.titulo);
@@ -40,7 +39,6 @@ export async function createArticulo(data: ArticuloFormData) {
 }
 
 export async function updateArticulo(id: string, data: ArticuloFormData) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const articulo = await prisma.articulo.findUnique({
@@ -92,7 +90,6 @@ export async function updateArticulo(id: string, data: ArticuloFormData) {
 }
 
 export async function deleteArticulo(id: string) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const articulo = await prisma.articulo.findUnique({
@@ -112,7 +109,6 @@ export async function deleteArticulo(id: string) {
 }
 
 export async function togglePublicado(id: string) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const articulo = await prisma.articulo.findUnique({

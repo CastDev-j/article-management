@@ -26,7 +26,6 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  // Usar la nueva función simplificada
   const { userId } = await auth();
   const isAdmin = await checkIsAdmin(userId);
 
@@ -52,7 +51,7 @@ export default async function HomePage() {
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-            {userId && (
+            {isAdmin && (
               <Link href="/admin/articulos">
                 <Button size="lg" variant="outline">
                   Crear Artículo

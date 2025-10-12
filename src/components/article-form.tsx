@@ -32,7 +32,6 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
     articulo?.autors && articulo.autors.length > 0 ? articulo.autors : [""]
   );
 
-  // Estados para el preview
   const [titulo, setTitulo] = useState(articulo?.titulo || "");
   const [descripcion, setDescripcion] = useState(articulo?.descripcion || "");
   const [contenido, setContenido] = useState(articulo?.contenido || "");

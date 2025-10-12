@@ -7,7 +7,6 @@ import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { requireAdmin } from "./auth";
 
 export async function createCategoria(nombre: string) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const baseSlug = generateSlug(nombre);
@@ -28,7 +27,6 @@ export async function createCategoria(nombre: string) {
 }
 
 export async function updateCategoria(id: string, nombre: string) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const categoria = await prisma.categoria.findUnique({
@@ -68,7 +66,6 @@ export async function updateCategoria(id: string, nombre: string) {
 }
 
 export async function deleteCategoria(id: string) {
-  // Verificar que el usuario sea admin
   await requireAdmin();
 
   const categoria = await prisma.categoria.findUnique({

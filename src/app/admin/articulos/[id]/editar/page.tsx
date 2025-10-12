@@ -39,7 +39,6 @@ export default async function EditarArticuloPage({
     redirect("/");
   }
 
-  // Verificar que el usuario sea admin
   const isAdmin = await checkIsAdmin(userId);
 
   if (!isAdmin) {
@@ -54,8 +53,6 @@ export default async function EditarArticuloPage({
   if (!articulo) {
     notFound();
   }
-
-  // Cualquier usuario autenticado puede editar artículos
 
   return (
     <>

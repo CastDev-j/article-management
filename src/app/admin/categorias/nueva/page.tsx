@@ -17,7 +17,6 @@ export default async function NuevaCategoriaPage() {
     redirect("/");
   }
 
-  // Verificar que el usuario sea admin
   const isAdmin = await checkIsAdmin(userId);
 
   if (!isAdmin) {
