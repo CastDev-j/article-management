@@ -29,9 +29,6 @@ export default async function HomePage() {
   const { userId } = await auth();
   const isAdmin = await checkIsAdmin(userId);
 
-  console.log("Usuario ID:", userId);
-  console.log("¿Es admin?:", isAdmin);
-
   return (
     <>
       <AdminHeader />

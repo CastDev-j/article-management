@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { PenSquare, Search, Menu, FolderOpen } from "lucide-react";
+import { PenSquare, Search, Menu, FolderOpen, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+} from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { checkIsAdmin } from "@/app/actions/auth";
 
@@ -53,7 +59,9 @@ export async function AdminHeader() {
                 </Link>
               </>
             )}
-            <UserButton />
+            <UserButton
+              fallback={<div className="w-8 h-8 bg-gray-300 rounded-full" />}
+            />
           </SignedIn>
 
           <SignedOut>
@@ -111,24 +119,23 @@ export async function AdminHeader() {
 
                 <div className="border-t pt-6 mx-4">
                   <SignedIn>
-                    <div className="flex items-center gap-3 cursor-pointer">
-                      <UserButton
-                        appearance={{
-                          elements: {
-                            avatarBox: "w-8 h-8",
-                          },
-                        }}
-                        fallback={
-                          <div className="w-8 h-8 bg-gray-300 rounded-full" />
-                        }
-                        children={undefined}
-                      />
-                      <label
-                        htmlFor="user-account"
-                        className="text-sm text-muted-foreground cursor-pointer"
-                      >
-                        Mi cuenta
-                      </label>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <UserButton
+                          fallback={
+                            <div className="w-8 h-8 bg-gray-300 rounded-full" />
+                          }
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          Mi cuenta
+                        </span>
+                      </div>
+                      <SignOutButton>
+                        <Button variant="outline" className="w-full gap-2">
+                          <LogOut className="h-4 w-4" />
+                          Cerrar Sesión
+                        </Button>
+                      </SignOutButton>
                     </div>
                   </SignedIn>
                   <SignedOut>
