@@ -93,6 +93,17 @@ export async function Footer() {
             </ul>
           </div>
         </div>
+
+        {userId && !isAdmin && (
+          <div className="mt-8 border-t pt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              ¿Necesitas acceso de administrador?{" "}
+              <span className="font-medium text-foreground">
+                Contacta con los administradores del sitio.
+              </span>
+            </p>
+          </div>
+        )}
       </div>
     </footer>
   );
