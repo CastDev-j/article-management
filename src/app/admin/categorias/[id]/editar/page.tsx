@@ -1,9 +1,10 @@
-import { Header } from "@/components/header";
 import { CategoriaForm } from "@/components/categoria-form";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { AdminHeader } from "@/components/admin-header";
+import { checkIsAdmin } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
   title: "Editar Categoría | Admin",
@@ -18,7 +19,14 @@ export default async function EditarCategoriaPage({
   const { userId } = await auth();
 
   if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
+    redirect("/");
+  }
+
+  // Verificar que el usuario sea admin
+  const isAdmin = await checkIsAdmin(userId);
+
+  if (!isAdmin) {
+    redirect("/");
   }
 
   const categoria = await prisma.categoria.findUnique({
@@ -31,7 +39,7 @@ export default async function EditarCategoriaPage({
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <h1 className="mb-8 font-serif text-4xl font-bold">Editar Categoría</h1>
         <CategoriaForm categoria={categoria} />

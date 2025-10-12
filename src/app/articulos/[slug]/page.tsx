@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getArticuloBySlug } from "@/app/actions/articulos";
@@ -10,6 +9,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
+import { AdminHeader } from "@/components/admin-header";
 
 export async function generateMetadata({
   params,
@@ -68,7 +68,7 @@ export default async function ArticuloPage({
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-12">
         <Link href="/articulos">
           <Button variant="ghost" className="mb-8 font-sans text-sm">
@@ -120,7 +120,7 @@ export default async function ArticuloPage({
 
           {articulo.imagen && (
             <figure className="mb-12">
-              <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg border-2 border-border">
                 <Image
                   src={articulo.imagen || "/placeholder.svg"}
                   alt={articulo.titulo}
@@ -135,8 +135,102 @@ export default async function ArticuloPage({
             </figure>
           )}
 
-          <div className="prose prose-lg prose-stone mx-auto max-w-none dark:prose-invert">
-            <ReactMarkdown>{articulo.contenido}</ReactMarkdown>
+          <div className="article-content mx-auto max-w-none font-serif">
+            <ReactMarkdown
+              components={{
+                h1: ({ node, ...props }) => (
+                  <h1
+                    className="mb-6 mt-10 text-4xl font-bold leading-tight tracking-tight"
+                    {...props}
+                  />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2
+                    className="mb-4 mt-8 border-b-2 border-foreground/10 pb-2 text-3xl font-bold tracking-tight"
+                    {...props}
+                  />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3
+                    className="mb-3 mt-6 text-2xl font-bold tracking-tight"
+                    {...props}
+                  />
+                ),
+                h4: ({ node, ...props }) => (
+                  <h4
+                    className="mb-2 mt-4 text-xl font-bold tracking-tight"
+                    {...props}
+                  />
+                ),
+                p: ({ node, ...props }) => (
+                  <p
+                    className="mb-4 text-lg leading-relaxed text-foreground/90"
+                    {...props}
+                  />
+                ),
+                a: ({ node, ...props }) => (
+                  <a
+                    className="font-semibold text-foreground underline decoration-foreground/30 decoration-2 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary"
+                    {...props}
+                  />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote
+                    className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 italic text-foreground/80"
+                    {...props}
+                  />
+                ),
+                strong: ({ node, ...props }) => (
+                  <strong className="font-bold text-foreground" {...props} />
+                ),
+                code: ({ node, inline, ...props }: any) =>
+                  inline ? (
+                    <code
+                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground"
+                      {...props}
+                    />
+                  ) : (
+                    <code
+                      className="block rounded border-2 border-border bg-muted/30 p-4 font-mono text-sm"
+                      {...props}
+                    />
+                  ),
+                ul: ({ node, ...props }) => (
+                  <ul className="my-4 list-disc space-y-2 pl-8" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="my-4 list-decimal space-y-2 pl-8" {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li
+                    className="text-lg leading-relaxed text-foreground/90"
+                    {...props}
+                  />
+                ),
+                hr: ({ node, ...props }) => (
+                  <hr
+                    className="my-8 border-t-2 border-foreground/20"
+                    {...props}
+                  />
+                ),
+                img: ({ node, ...props }) => (
+                  <span className="my-8 block">
+                    <img
+                      {...props}
+                      className="w-full rounded-lg border-2 border-border"
+                      loading="lazy"
+                    />
+                    {props.alt && (
+                      <span className="mt-2 block text-center text-sm italic text-muted-foreground">
+                        {props.alt}
+                      </span>
+                    )}
+                  </span>
+                ),
+              }}
+            >
+              {articulo.contenido}
+            </ReactMarkdown>
           </div>
 
           <div className="mt-16 border-t-2 border-foreground pt-8">

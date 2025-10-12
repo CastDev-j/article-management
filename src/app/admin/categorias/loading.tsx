@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +13,7 @@ import { Plus } from "lucide-react";
 export default function Loading() {
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
           <Skeleton className="h-10 w-80" />

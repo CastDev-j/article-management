@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +15,10 @@ import { Plus, Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/delete-button";
 import { TogglePublicadoButton } from "@/components/toggle-publicado-button";
 import type { Metadata } from "next";
+import { checkIsAdmin } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
-  title: "Mis Artículos | Admin",
+  title: "Artículos del sitio | Admin",
   description: "Gestiona tus artículos. Crea, edita y publica contenido.",
 };
 
@@ -28,14 +29,21 @@ export default async function AdminArticulosPage() {
     redirect("/");
   }
 
-  const articulos = await getArticulos(); // Obtener todos los artículos (ya que cualquier admin puede editar)
+  // Verificar que el usuario sea admin
+  const isAdmin = await checkIsAdmin(userId);
+
+  if (!isAdmin) {
+    redirect("/");
+  }
+
+  const articulos = await getArticulos();
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-4xl font-bold">Mis Artículos</h1>
+          <h1 className="text-4xl font-bold">Artículos del sitio</h1>
           <Link href="/admin/articulos/nuevo">
             <Button>
               <Plus className="mr-2 h-4 w-4" />

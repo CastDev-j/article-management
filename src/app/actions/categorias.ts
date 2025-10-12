@@ -3,17 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
+import { requireAdmin } from "./auth";
 
 export async function createCategoria(nombre: string) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
-  }
-
-  console.log("Sesión de Clerk en createCategoria:", { userId });
+  // Verificar que el usuario sea admin
+  await requireAdmin();
 
   const baseSlug = generateSlug(nombre);
   const slug = await generateUniqueSlug(baseSlug, async (s) => {
@@ -33,13 +28,8 @@ export async function createCategoria(nombre: string) {
 }
 
 export async function updateCategoria(id: string, nombre: string) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
-  }
-
-  console.log("Sesión de Clerk en updateCategoria:", { userId });
+  // Verificar que el usuario sea admin
+  await requireAdmin();
 
   const categoria = await prisma.categoria.findUnique({
     where: { id },
@@ -78,13 +68,8 @@ export async function updateCategoria(id: string, nombre: string) {
 }
 
 export async function deleteCategoria(id: string) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
-  }
-
-  console.log("Sesión de Clerk en deleteCategoria:", { userId });
+  // Verificar que el usuario sea admin
+  await requireAdmin();
 
   const categoria = await prisma.categoria.findUnique({
     where: { id },

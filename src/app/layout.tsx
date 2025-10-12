@@ -20,7 +20,6 @@ const lora = Lora({
 export const metadata: Metadata = {
   title: "Gestión de Artículos",
   description: "Sistema de gestión de artículos con categorías",
-  generator: "v0.app",
 };
 
 export default function RootLayout({

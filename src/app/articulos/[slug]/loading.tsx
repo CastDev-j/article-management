@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 export default function Loading() {
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto max-w-4xl px-4 py-8">
         <Button variant="ghost" className="mb-6" disabled>
           <ArrowLeft className="mr-2 h-4 w-4" />

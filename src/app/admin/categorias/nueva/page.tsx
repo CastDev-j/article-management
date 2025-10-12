@@ -1,7 +1,9 @@
-import { Header } from "@/components/header";
 import { CategoriaForm } from "@/components/categoria-form";
+import { AdminHeader } from "@/components/admin-header";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
+import { checkIsAdmin } from "@/app/actions/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Nueva Categoría | Admin",
@@ -12,12 +14,19 @@ export default async function NuevaCategoriaPage() {
   const { userId } = await auth();
 
   if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
+    redirect("/");
+  }
+
+  // Verificar que el usuario sea admin
+  const isAdmin = await checkIsAdmin(userId);
+
+  if (!isAdmin) {
+    redirect("/");
   }
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <h1 className="mb-8 font-serif text-4xl font-bold">Nueva Categoría</h1>
         <CategoriaForm />

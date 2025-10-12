@@ -1,6 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 
-export function Footer() {
+export async function Footer() {
+  const { userId } = await auth();
+
   return (
     <footer className="mt-auto border-t bg-muted/50">
       <div className="container mx-auto px-4 py-8">
@@ -46,22 +49,32 @@ export function Footer() {
           <div>
             <h4 className="mb-4 text-sm font-semibold">Administración</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/admin/articulos"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Mis Artículos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/admin/articulos/nuevo"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Crear Artículo
-                </Link>
-              </li>
+              {userId ? (
+                <>
+                  <li>
+                    <Link
+                      href="/admin/articulos"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Artículos del sitio
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/admin/articulos/nuevo"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Crear Artículo
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <span className="text-muted-foreground">
+                    Inicia sesión para acceder a la administración
+                  </span>
+                </li>
+              )}
             </ul>
           </div>
 

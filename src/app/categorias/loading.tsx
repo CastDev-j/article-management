@@ -1,11 +1,11 @@
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Skeleton className="mb-2 h-10 w-64" />

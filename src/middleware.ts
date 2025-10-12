@@ -7,12 +7,6 @@ export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
     const { userId } = await auth();
 
-    // Log de sesión en rutas protegidas
-    console.log("Middleware - Sesión de Clerk:", {
-      userId,
-      path: req.nextUrl.pathname,
-    });
-
     await auth.protect();
   }
 });

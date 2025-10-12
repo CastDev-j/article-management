@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCategorias } from "@/app/actions/categorias";
@@ -38,7 +38,7 @@ export default async function CategoriasPage() {
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold">Categorías</h1>

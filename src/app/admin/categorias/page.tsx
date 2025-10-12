@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +14,9 @@ import { DeleteCategoriaButton } from "@/components/delete-categoria-button";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
+import { AdminHeader } from "@/components/admin-header";
+import { checkIsAdmin } from "@/app/actions/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Gestión de Categorías | Admin",
@@ -25,7 +27,14 @@ export default async function AdminCategoriasPage() {
   const { userId } = await auth();
 
   if (!userId) {
-    throw new Error("No autorizado. Debes iniciar sesión.");
+    redirect("/");
+  }
+
+  // Verificar que el usuario sea admin
+  const isAdmin = await checkIsAdmin(userId);
+
+  if (!isAdmin) {
+    redirect("/");
   }
 
   const categorias = await getCategorias();
@@ -42,7 +51,7 @@ export default async function AdminCategoriasPage() {
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="font-serif text-4xl font-bold">

@@ -1,11 +1,11 @@
-import { Header } from "@/components/header";
+import { AdminHeader } from "@/components/admin-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 
 export default function Loading() {
   return (
     <>
-      <Header />
+      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Skeleton className="mb-4 h-10 w-48" />
