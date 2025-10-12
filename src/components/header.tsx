@@ -3,15 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PenSquare, Search, Menu, LogOut, FolderOpen } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { getCurrentUser } from "@/lib/auth";
-import { logout } from "@/app/actions/auth";
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 export async function Header() {
   const user = await getCurrentUser();
@@ -57,12 +49,6 @@ export async function Header() {
                 <FolderOpen className="mr-1 inline h-4 w-4" />
                 Categorías
               </Link>
-              <form action={logout}>
-                <Button variant="ghost" size="sm">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Salir
-                </Button>
-              </form>
             </>
           ) : (
             <>
@@ -116,19 +102,9 @@ export async function Header() {
                     >
                       Categorías
                     </Link>
-                    <form action={logout}>
-                      <Button variant="ghost" className="w-full justify-start">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Salir
-                      </Button>
-                    </form>
                   </>
                 ) : (
-                  <Link href="/login">
-                    <Button variant="outline" className="w-full bg-transparent">
-                      Iniciar Sesión
-                    </Button>
-                  </Link>
+                  <> </>
                 )}
               </nav>
             </SheetContent>

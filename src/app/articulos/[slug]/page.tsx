@@ -9,6 +9,7 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Metadata } from "next";
+import ReactMarkdown from "react-markdown";
 
 export async function generateMetadata({
   params,
@@ -134,17 +135,8 @@ export default async function ArticuloPage({
             </figure>
           )}
 
-          <div className="space-y-6 font-sans text-lg leading-relaxed text-foreground/95">
-            {articulo.contenido
-              .split("\n")
-              .map((paragraph: string, index: number) => (
-                <p
-                  key={index}
-                  className="first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:font-bold first-letter:leading-none first-of-type:first-letter:text-foreground"
-                >
-                  {paragraph}
-                </p>
-              ))}
+          <div className="prose prose-lg prose-stone mx-auto max-w-none dark:prose-invert">
+            <ReactMarkdown>{articulo.contenido}</ReactMarkdown>
           </div>
 
           <div className="mt-16 border-t-2 border-foreground pt-8">
