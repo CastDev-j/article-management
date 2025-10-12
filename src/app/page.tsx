@@ -9,19 +9,19 @@ import { checkIsAdmin } from "@/app/actions/auth";
 export const metadata: Metadata = {
   title: "Gestión de Artículos | Sistema de Gestión de Contenido",
   description:
-    "Sistema completo de gestión de artículos con categorías, búsqueda avanzada y autenticación. Crea, organiza y publica contenido fácilmente.",
+    "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación. Crea, organiza y publica contenido fácilmente.",
   keywords: ["gestión de artículos", "CMS", "blog", "categorías", "búsqueda"],
   openGraph: {
     title: "Gestión de Artículos | Sistema de Gestión de Contenido",
     description:
-      "Sistema completo de gestión de artículos con categorías, búsqueda avanzada y autenticación.",
+      "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Gestión de Artículos",
     description:
-      "Sistema completo de gestión de artículos con categorías, búsqueda avanzada y autenticación.",
+      "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación.",
   },
 };
 
@@ -39,7 +39,7 @@ export default async function HomePage() {
           </h1>
           <p className="mb-8 text-pretty text-xl leading-relaxed text-muted-foreground">
             Crea, organiza y publica artículos con un sistema completo de
-            categorías y búsqueda avanzada.
+            categorías y búsqueda.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/articulos">

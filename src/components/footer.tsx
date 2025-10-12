@@ -15,7 +15,7 @@ export async function Footer() {
             <div>
               <p className="text-pretty text-sm text-muted-foreground mb-3">
                 Sistema completo de gestión de artículos con categorías y
-                búsqueda avanzada.
+                búsqueda.
               </p>
             </div>
           </div>
