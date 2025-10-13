@@ -69,31 +69,33 @@ export default async function ArticuloPage({
   return (
     <>
       <PublicHeader />
-      <main className="container mx-auto px-4 pt-4 pb-12">
+      <main className="container mx-auto px-4 pt-4 pb-8 md:pb-12">
         <Link href="/todos-los-articulos">
-          <Button variant="ghost" className="mb-8 font-sans text-sm">
+          <Button variant="ghost" className="mb-6 md:mb-8 font-sans text-sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a artículos
           </Button>
         </Link>
 
         <article className="mx-auto max-w-4xl">
-          <h1 className="mb-4 text-balance font-serif text-5xl font-bold leading-tight tracking-tight lg:text-6xl">
+          <h1 className="mb-3 md:mb-4 text-balance font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
             {articulo.titulo}
           </h1>
 
           {articulo.descripcion && (
-            <p className="mb-8 border-b border-t border-border py-6 text-pretty font-serif text-xl leading-relaxed text-foreground/90 lg:text-2xl">
+            <p className="mb-6 md:mb-8 border-b border-t border-border py-4 md:py-6 text-pretty font-serif text-lg md:text-xl lg:text-2xl leading-relaxed text-foreground/90">
               {articulo.descripcion}
             </p>
           )}
 
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-border pb-6 font-sans text-sm">
+          <div className="mb-6 md:mb-8 flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 md:gap-x-6 md:gap-y-2 border-b border-border pb-4 md:pb-6 font-sans text-xs md:text-sm">
             <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
               <span className="font-semibold text-foreground">Por</span>
-              <span>{articulo.autors.join(", ")}</span>
+              <span className="truncate max-w-[200px] md:max-w-none">
+                {articulo.autors.join(", ")}
+              </span>
             </div>
-            <div className="flex flex-col gap-1 items-end">
+            <div className="flex flex-col gap-1 items-start sm:items-end">
               <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <time
@@ -108,7 +110,7 @@ export default async function ArticuloPage({
               {articulo.updatedAt &&
                 new Date(articulo.updatedAt).getTime() !==
                   new Date(articulo.createdAt).getTime() && (
-                  <span className="text-[11px] italic text-muted-foreground/70">
+                  <span className="text-[10px] md:text-[11px] italic text-muted-foreground/70">
                     Última actualización:{" "}
                     {format(new Date(articulo.updatedAt), "d 'de' MMMM, yyyy", {
                       locale: es,
@@ -119,7 +121,7 @@ export default async function ArticuloPage({
           </div>
 
           {articulo.articuloCategorias.length > 0 && (
-            <div className="mb-8 flex flex-wrap gap-2">
+            <div className="mb-6 md:mb-8 flex flex-wrap gap-1.5 md:gap-2">
               {articulo.articuloCategorias.map(({ categoria }: any) => (
                 <Link
                   key={categoria.id}
@@ -127,7 +129,7 @@ export default async function ArticuloPage({
                 >
                   <Badge
                     variant="outline"
-                    className="cursor-pointer font-sans text-xs uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background"
+                    className="cursor-pointer font-sans text-[10px] md:text-xs uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background"
                   >
                     {categoria.nombre}
                   </Badge>
@@ -137,7 +139,7 @@ export default async function ArticuloPage({
           )}
 
           {articulo.imagen && (
-            <figure className="mb-12">
+            <figure className="mb-8 md:mb-12">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg border-2 border-border">
                 <Image
                   src={articulo.imagen || "/placeholder.svg"}
@@ -147,7 +149,7 @@ export default async function ArticuloPage({
                   priority
                 />
               </div>
-              <figcaption className="mt-3 text-center font-sans text-sm italic text-muted-foreground">
+              <figcaption className="mt-2 md:mt-3 text-center font-sans text-xs md:text-sm italic text-muted-foreground">
                 {articulo.titulo}
               </figcaption>
             </figure>
@@ -158,31 +160,31 @@ export default async function ArticuloPage({
               components={{
                 h1: ({ node, ...props }) => (
                   <h1
-                    className="mb-6 mt-10 font-serif text-4xl font-bold leading-tight tracking-tight"
+                    className="mb-4 md:mb-6 mt-8 md:mt-10 font-serif text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight"
                     {...props}
                   />
                 ),
                 h2: ({ node, ...props }) => (
                   <h2
-                    className="mb-4 mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-3xl font-bold tracking-tight"
+                    className="mb-3 md:mb-4 mt-6 md:mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 h3: ({ node, ...props }) => (
                   <h3
-                    className="mb-3 mt-6 font-serif text-2xl font-bold tracking-tight"
+                    className="mb-2 md:mb-3 mt-5 md:mt-6 font-serif text-lg md:text-xl lg:text-2xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 h4: ({ node, ...props }) => (
                   <h4
-                    className="mb-2 mt-4 font-serif text-xl font-bold tracking-tight"
+                    className="mb-2 mt-4 font-serif text-base md:text-lg lg:text-xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 p: ({ node, ...props }) => (
                   <p
-                    className="mb-6 text-[18px] leading-[1.75] tracking-wide text-foreground/95"
+                    className="mb-4 md:mb-6 text-base md:text-[18px] leading-[1.65] md:leading-[1.75] tracking-wide text-foreground/95"
                     style={{
                       fontFamily:
                         'Georgia, Cambria, "Times New Roman", Times, serif',

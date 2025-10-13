@@ -102,9 +102,9 @@ export default async function TodosLosArticulosPage({
   return (
     <>
       <PublicHeader />
-      <main className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-8">
+      <main className="container mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-3xl mx-auto mb-8 md:mb-12 text-center">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6 md:mb-8">
             Todos los Artículos
           </h1>
 
@@ -118,20 +118,22 @@ export default async function TodosLosArticulosPage({
                   name="q"
                   placeholder="Buscar artículos..."
                   defaultValue={busqueda}
-                  className="pl-10"
+                  className="pl-10 h-10"
                 />
               </div>
-              <Button type="submit">Buscar</Button>
+              <Button type="submit" className="px-4 md:px-6">
+                Buscar
+              </Button>
             </div>
           </form>
         </div>
 
-        <div className="mb-8 rounded-lg p-6 bg-muted/30">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold mb-3">
+        <div className="mb-6 md:mb-8 rounded-lg p-4 md:p-6 bg-muted/30">
+          <div className="mb-3 md:mb-4">
+            <h2 className="text-sm font-semibold mb-2 md:mb-3">
               Filtrar por categoría:
             </h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 md:gap-2">
               {todasCategorias.map((categoria) => (
                 <Link key={categoria.id} href={toggleCategoria(categoria.slug)}>
                   <Badge
@@ -140,7 +142,7 @@ export default async function TodosLosArticulosPage({
                         ? "default"
                         : "outline"
                     }
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-xs md:text-sm"
                   >
                     {categoria.nombre}
                   </Badge>
@@ -150,17 +152,17 @@ export default async function TodosLosArticulosPage({
           </div>
 
           {(busqueda || categoriasSlugs.length > 0) && (
-            <div className="pt-4 border-t">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-medium text-muted-foreground">
+            <div className="pt-3 md:pt-4 border-t">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4">
+                <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
+                  <span className="text-xs md:text-sm font-medium text-muted-foreground">
                     Filtros activos:
                   </span>
                   {busqueda && (
                     <Link href={buildFilterUrl(categoriasSlugs, "")}>
                       <Badge
                         variant="default"
-                        className="cursor-pointer hover:bg-primary/80"
+                        className="cursor-pointer hover:bg-primary/80 text-xs"
                       >
                         Búsqueda: &quot;{busqueda}&quot;
                         <X className="h-3 w-3 ml-1" />
@@ -174,7 +176,7 @@ export default async function TodosLosArticulosPage({
                     >
                       <Badge
                         variant="default"
-                        className="cursor-pointer hover:bg-primary/80"
+                        className="cursor-pointer hover:bg-primary/80 text-xs"
                       >
                         {categoria.nombre}
                         <X className="h-3 w-3 ml-1" />
@@ -185,7 +187,7 @@ export default async function TodosLosArticulosPage({
                 <Link href="/todos-los-articulos">
                   <Badge
                     variant="destructive"
-                    className="cursor-pointer hover:bg-destructive/80"
+                    className="cursor-pointer hover:bg-destructive/80 text-xs whitespace-nowrap"
                   >
                     <X className="h-3 w-3 mr-1" />
                     Limpiar todo
@@ -197,7 +199,7 @@ export default async function TodosLosArticulosPage({
         </div>
 
         {(busqueda || categoriasSlugs.length > 0) && (
-          <p className="text-muted-foreground mb-6">
+          <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6">
             Mostrando {totalArticulos} resultado
             {totalArticulos !== 1 ? "s" : ""}
             {busqueda && ` para "${busqueda}"`}
@@ -214,9 +216,9 @@ export default async function TodosLosArticulosPage({
                   href={`/articulos/${articulo.slug}`}
                   className="block group"
                 >
-                  <article className="py-6 flex gap-6 hover:bg-muted/50 transition-colors rounded-lg px-4">
+                  <article className="py-4 md:py-6 flex gap-3 md:gap-6 hover:bg-muted/50 transition-colors rounded-lg px-2 md:px-4">
                     {articulo.imagen && (
-                      <div className="relative w-32 h-24 flex-shrink-0 overflow-hidden rounded-md">
+                      <div className="relative w-24 h-20 md:w-32 md:h-24 flex-shrink-0 overflow-hidden rounded-md">
                         <Image
                           src={articulo.imagen}
                           alt={articulo.titulo}
@@ -229,28 +231,28 @@ export default async function TodosLosArticulosPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col h-full">
                         <div className="flex-1">
-                          <h2 className="text-xl font-serif font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                          <h2 className="text-lg md:text-xl font-serif font-bold mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-2">
                             {articulo.titulo}
                           </h2>
                           {articulo.descripcion && (
-                            <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                            <p className="text-muted-foreground text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
                               {articulo.descripcion}
                             </p>
                           )}
-                          <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <div className="flex items-center gap-1.5 md:gap-2 flex-wrap mb-2">
                             {articulo.articuloCategorias?.map((ac: any) => (
                               <CategoryBadge
                                 key={ac.categoriaId}
                                 slug={ac.categoria.slug}
                                 nombre={ac.categoria.nombre}
                                 variant="secondary"
-                                className="text-xs"
+                                className="text-[10px] md:text-xs"
                               />
                             ))}
                           </div>
                         </div>
-                        <div className="flex justify-end mt-2">
-                          <span className="text-xs text-muted-foreground">
+                        <div className="flex justify-end mt-1 md:mt-2">
+                          <span className="text-[10px] md:text-xs text-muted-foreground">
                             {new Date(articulo.createdAt).toLocaleDateString(
                               "es-ES",
                               {
@@ -270,8 +272,8 @@ export default async function TodosLosArticulosPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-xl text-muted-foreground mb-2">
+          <div className="text-center py-8 md:py-12">
+            <p className="text-lg md:text-xl text-muted-foreground mb-2">
               No se encontraron artículos.
             </p>
             {(busqueda || categoriasSlugs.length > 0) && (

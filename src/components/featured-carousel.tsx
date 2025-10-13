@@ -61,7 +61,7 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <CardContent className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                  <CardContent className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 text-white">
                     {article.articuloCategorias &&
                       article.articuloCategorias.length > 0 && (
                         <Link
@@ -69,29 +69,31 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                         >
                           <Badge
                             variant="secondary"
-                            className="mb-3 bg-primary/90 hover:bg-primary cursor-pointer transition-colors"
+                            className="mb-2 md:mb-3 bg-primary/90 hover:bg-primary text-white cursor-pointer transition-colors text-xs md:text-sm"
                           >
                             {article.articuloCategorias[0].categoria.nombre}
                           </Badge>
                         </Link>
                       )}
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-3 line-clamp-2">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold mb-2 md:mb-3 line-clamp-2">
                       {article.titulo}
                     </h2>
                     {article.descripcion && (
-                      <p className="text-base md:text-lg text-white/90 mb-4 line-clamp-2">
+                      <p className="text-sm md:text-base lg:text-lg text-white/90 mb-3 md:mb-4 line-clamp-2 hidden sm:block">
                         {article.descripcion}
                       </p>
                     )}
-                    <div className="flex flex-wrap gap-4 text-sm text-white/80">
+                    <div className="flex flex-wrap gap-2 md:gap-4 text-xs md:text-sm text-white/80">
                       {article.autors && article.autors.length > 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <User className="h-4 w-4" />
-                          <span>{article.autors[0]}</span>
+                        <div className="flex items-center gap-1 md:gap-1.5">
+                          <User className="h-3 w-3 md:h-4 md:w-4" />
+                          <span className="truncate max-w-[120px] md:max-w-none">
+                            {article.autors[0]}
+                          </span>
                         </div>
                       )}
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4" />
+                      <div className="flex items-center gap-1 md:gap-1.5">
+                        <Calendar className="h-3 w-3 md:h-4 md:w-4" />
                         <time>
                           {new Date(article.createdAt).toLocaleDateString(
                             "es-ES",

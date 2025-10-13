@@ -4,18 +4,18 @@ import { ArrowLeft } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
-      <Button variant="ghost" className="mb-8" disabled>
+    <div className="container mx-auto max-w-4xl px-4 py-6 md:py-8">
+      <Button variant="ghost" className="mb-6 md:mb-8" disabled>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Volver a artículos
       </Button>
 
-      <Skeleton className="mb-8 h-10 w-64" />
+      <Skeleton className="mb-6 md:mb-8 h-8 md:h-10 w-48 md:w-64" />
 
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div className="space-y-2">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-4 md:h-5 w-14 md:w-16" />
+          <Skeleton className="h-9 md:h-10 w-full" />
         </div>
 
         <div className="space-y-2">

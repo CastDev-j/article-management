@@ -32,25 +32,25 @@ export function PublicHeader() {
         <div className="flex items-center gap-2 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Menú">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col gap-8 pt-6">
-                <nav className="flex flex-col gap-6">
+            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+              <div className="flex flex-col gap-6 pt-8">
+                <nav className="flex flex-col gap-4">
                   <Link
                     href="/"
-                    className="text-lg font-medium transition-colors hover:text-primary px-4"
+                    className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                   >
                     Inicio
                   </Link>
                   <Link
                     href="/todos-los-articulos"
-                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
+                    className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                   >
+                    <Search className="h-4 w-4" />
                     Todos los artículos
-                    <Search className="h-5 w-5" />
                   </Link>
                 </nav>
               </div>

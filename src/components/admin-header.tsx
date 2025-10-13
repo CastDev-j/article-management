@@ -77,50 +77,50 @@ export async function AdminHeader() {
         <div className="flex items-center gap-2 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Menú">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col gap-8 pt-6">
-                <nav className="flex flex-col gap-6">
+            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+              <div className="flex flex-col gap-6 pt-8">
+                <nav className="flex flex-col gap-2">
                   <Link
                     href="/"
-                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
+                    className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                   >
-                    <Home className="h-5 w-5" />
+                    <Home className="h-4 w-4" />
                     Ver sitio
                   </Link>
                   {isAdmin && (
                     <>
                       <Link
                         href="/admin"
-                        className="text-lg font-medium transition-colors hover:text-primary px-4"
+                        className="text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                       >
                         Dashboard
                       </Link>
                       <Link
                         href="/admin/articulos"
-                        className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
+                        className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                       >
-                        <PenSquare className="h-5 w-5" />
+                        <PenSquare className="h-4 w-4" />
                         Artículos
                       </Link>
                       <Link
                         href="/admin/categorias"
-                        className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
+                        className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                       >
-                        <FolderOpen className="h-5 w-5" />
+                        <FolderOpen className="h-4 w-4" />
                         Categorías
                       </Link>
                     </>
                   )}
                 </nav>
 
-                <div className="border-t pt-6 mx-4">
+                <div className="border-t pt-4">
                   <SignedIn>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 px-2">
                         <UserButton
                           fallback={
                             <div className="w-8 h-8 bg-gray-300 rounded-full" />
@@ -131,7 +131,11 @@ export async function AdminHeader() {
                         </span>
                       </div>
                       <SignOutButton>
-                        <Button variant="outline" className="w-full gap-2">
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2"
+                          size="sm"
+                        >
                           <LogOut className="h-4 w-4" />
                           Cerrar Sesión
                         </Button>
@@ -140,7 +144,9 @@ export async function AdminHeader() {
                   </SignedIn>
                   <SignedOut>
                     <SignInButton>
-                      <Button className="w-full">Iniciar Sesión</Button>
+                      <Button className="w-full" size="sm">
+                        Iniciar Sesión
+                      </Button>
                     </SignInButton>
                   </SignedOut>
                 </div>
