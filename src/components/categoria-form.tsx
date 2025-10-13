@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { createCategoria, updateCategoria } from "@/app/actions/categorias";
+import { createCategory, updateCategory } from "@/app/actions/categorias";
 
-interface CategoriaFormProps {
-  categoria?: {
+interface CategoryFormProps {
+  category?: {
     id: string;
     nombre: string;
   };
 }
 
-export function CategoriaForm({ categoria }: CategoriaFormProps) {
+export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,10 +31,10 @@ export function CategoriaForm({ categoria }: CategoriaFormProps) {
     const nombre = formData.get("nombre") as string;
 
     try {
-      if (categoria) {
-        await updateCategoria(categoria.id, nombre);
+      if (category) {
+        await updateCategory(category.id, nombre);
       } else {
-        await createCategoria(nombre);
+        await createCategory(nombre);
       }
       router.push("/admin/categorias");
       router.refresh();
@@ -62,7 +62,7 @@ export function CategoriaForm({ categoria }: CategoriaFormProps) {
             <Input
               id="nombre"
               name="nombre"
-              defaultValue={categoria?.nombre}
+              defaultValue={category?.nombre}
               placeholder="Ej: Política, Deportes, Cultura..."
               required
               disabled={isLoading}
@@ -73,7 +73,7 @@ export function CategoriaForm({ categoria }: CategoriaFormProps) {
           <Button type="submit" disabled={isLoading}>
             {isLoading
               ? "Guardando..."
-              : categoria
+              : category
               ? "Actualizar"
               : "Crear Categoría"}
           </Button>

@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { togglePublicado } from "@/app/actions/articulos";
+import { togglePublished } from "@/app/actions/articulos";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-export function TogglePublicadoButton({
-  articuloId,
-  publicado,
+export function TogglePublishedButton({
+  articleId,
+  published,
 }: {
-  articuloId: string;
-  publicado: boolean;
+  articleId: string;
+  published: boolean;
 }) {
   const [loading, setLoading] = useState(false);
 
   async function handleToggle() {
     setLoading(true);
     try {
-      await togglePublicado(articuloId);
+      await togglePublished(articleId);
     } catch (error) {
       alert("Error al cambiar el estado de publicación");
     } finally {
@@ -34,7 +34,7 @@ export function TogglePublicadoButton({
     >
       {loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
-      ) : publicado ? (
+      ) : published ? (
         <EyeOff className="h-4 w-4" />
       ) : (
         <Eye className="h-4 w-4" />

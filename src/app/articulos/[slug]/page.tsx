@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getArticuloBySlug } from "@/app/actions/articulos";
+import { getArticleBySlug } from "@/app/actions/articulos";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -17,39 +17,39 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const articulo = await getArticuloBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
-  if (!articulo || !articulo.publicado) {
+  if (!article || !article.publicado) {
     return {
       title: "Artículo no encontrado",
     };
   }
 
-  const categorias = articulo.articuloCategorias
+  const categories = article.articuloCategorias
     .map((ac: any) => ac.categoria.nombre)
     .join(", ");
 
   return {
-    title: `${articulo.titulo} | Gestión de Artículos`,
-    description: articulo.descripcion || articulo.contenido.slice(0, 160),
-    authors: articulo.autors.map((name: string) => ({ name })),
-    keywords: categorias,
+    title: `${article.titulo} | Gestión de Artículos`,
+    description: article.descripcion || article.contenido.slice(0, 160),
+    authors: article.autors.map((name: string) => ({ name })),
+    keywords: categories,
     openGraph: {
-      title: articulo.titulo,
-      description: articulo.descripcion || articulo.contenido.slice(0, 160),
+      title: article.titulo,
+      description: article.descripcion || article.contenido.slice(0, 160),
       type: "article",
-      publishedTime: articulo.createdAt.toISOString(),
-      modifiedTime: articulo.updatedAt.toISOString(),
-      authors: articulo.autors,
-      images: articulo.imagen
-        ? [{ url: articulo.imagen, alt: articulo.titulo }]
+      publishedTime: article.createdAt.toISOString(),
+      modifiedTime: article.updatedAt.toISOString(),
+      authors: article.autors,
+      images: article.imagen
+        ? [{ url: article.imagen, alt: article.titulo }]
         : [],
     },
     twitter: {
       card: "summary_large_image",
-      title: articulo.titulo,
-      description: articulo.descripcion || articulo.contenido.slice(0, 160),
-      images: articulo.imagen ? [articulo.imagen] : [],
+      title: article.titulo,
+      description: article.descripcion || article.contenido.slice(0, 160),
+      images: article.imagen ? [article.imagen] : [],
     },
   };
 }
@@ -60,9 +60,9 @@ export default async function ArticuloPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const articulo = await getArticuloBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
-  if (!articulo || !articulo.publicado) {
+  if (!article || !article.publicado) {
     notFound();
   }
 
@@ -79,12 +79,12 @@ export default async function ArticuloPage({
 
         <article className="mx-auto max-w-4xl">
           <h1 className="mb-3 md:mb-4 text-balance font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-            {articulo.titulo}
+            {article.titulo}
           </h1>
 
-          {articulo.descripcion && (
+          {article.descripcion && (
             <p className="mb-6 md:mb-8 border-b border-t border-border py-4 md:py-6 text-pretty font-serif text-lg md:text-xl lg:text-2xl leading-relaxed text-foreground/90">
-              {articulo.descripcion}
+              {article.descripcion}
             </p>
           )}
 
@@ -92,27 +92,27 @@ export default async function ArticuloPage({
             <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
               <span className="font-semibold text-foreground">Por</span>
               <span className="truncate max-w-[200px] md:max-w-none">
-                {articulo.autors.join(", ")}
+                {article.autors.join(", ")}
               </span>
             </div>
             <div className="flex flex-col gap-1 items-start sm:items-end">
               <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <time
-                  dateTime={articulo.createdAt.toISOString()}
+                  dateTime={article.createdAt.toISOString()}
                   className="font-medium"
                 >
-                  {format(new Date(articulo.createdAt), "d 'de' MMMM, yyyy", {
+                  {format(new Date(article.createdAt), "d 'de' MMMM, yyyy", {
                     locale: es,
                   })}
                 </time>
               </div>
-              {articulo.updatedAt &&
-                new Date(articulo.updatedAt).getTime() !==
-                  new Date(articulo.createdAt).getTime() && (
+              {article.updatedAt &&
+                new Date(article.updatedAt).getTime() !==
+                  new Date(article.createdAt).getTime() && (
                   <span className="text-[10px] md:text-[11px] italic text-muted-foreground/70">
                     Última actualización:{" "}
-                    {format(new Date(articulo.updatedAt), "d 'de' MMMM, yyyy", {
+                    {format(new Date(article.updatedAt), "d 'de' MMMM, yyyy", {
                       locale: es,
                     })}
                   </span>
@@ -120,9 +120,9 @@ export default async function ArticuloPage({
             </div>
           </div>
 
-          {articulo.articuloCategorias.length > 0 && (
+          {article.articuloCategorias.length > 0 && (
             <div className="mb-6 md:mb-8 flex flex-wrap gap-1.5 md:gap-2">
-              {articulo.articuloCategorias.map(({ categoria }: any) => (
+              {article.articuloCategorias.map(({ categoria }: any) => (
                 <Link
                   key={categoria.id}
                   href={`/todos-los-articulos?categorias=${categoria.slug}`}
@@ -138,19 +138,19 @@ export default async function ArticuloPage({
             </div>
           )}
 
-          {articulo.imagen && (
+          {article.imagen && (
             <figure className="mb-8 md:mb-12">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg border-2 border-border">
                 <Image
-                  src={articulo.imagen || "/placeholder.svg"}
-                  alt={articulo.titulo}
+                  src={article.imagen || "/placeholder.svg"}
+                  alt={article.titulo}
                   fill
                   className="object-cover"
                   priority
                 />
               </div>
               <figcaption className="mt-2 md:mt-3 text-center font-sans text-xs md:text-sm italic text-muted-foreground">
-                {articulo.titulo}
+                {article.titulo}
               </figcaption>
             </figure>
           )}
@@ -268,7 +268,7 @@ export default async function ArticuloPage({
                 ),
               }}
             >
-              {articulo.contenido}
+              {article.contenido}
             </ReactMarkdown>
           </div>
 

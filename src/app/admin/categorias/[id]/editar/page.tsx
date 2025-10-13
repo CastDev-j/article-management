@@ -1,4 +1,4 @@
-import { CategoriaForm } from "@/components/categoria-form";
+import { CategoryForm } from "@/components/categoria-form";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
@@ -27,18 +27,18 @@ export default async function EditarCategoriaPage({
     redirect("/");
   }
 
-  const categoria = await prisma.categoria.findUnique({
+  const category = await prisma.categoria.findUnique({
     where: { id: params.id },
   });
 
-  if (!categoria) {
+  if (!category) {
     notFound();
   }
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-8 font-serif text-4xl font-bold">Editar Categoría</h1>
-      <CategoriaForm categoria={categoria} />
+      <CategoryForm category={category} />
     </div>
   );
 }

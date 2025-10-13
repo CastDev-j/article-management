@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getCategoriasWithPagination } from "@/app/actions/categorias";
+import { getCategoriesWithPagination } from "@/app/actions/categorias";
 import { Plus, Pencil } from "lucide-react";
-import { DeleteCategoriaButton } from "@/components/delete-categoria-button";
+import { DeleteCategoryButton } from "@/components/delete-categoria-button";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
@@ -43,17 +43,17 @@ export default async function AdminCategoriasPage({
   const resolvedSearchParams = await searchParams;
   const currentPage = Number(resolvedSearchParams.page) || 1;
 
-  const { categorias, totalPages, total } = await getCategoriasWithPagination({
+  const { categories, totalPages, total } = await getCategoriesWithPagination({
     page: currentPage,
     pageSize: 9,
   });
 
-  const categoriasConConteo = await Promise.all(
-    categorias.map(async (categoria) => {
+  const categoriesWithCount = await Promise.all(
+    categories.map(async (category) => {
       const count = await prisma.articuloCategoria.count({
-        where: { categoriaId: categoria.id },
+        where: { categoriaId: category.id },
       });
-      return { ...categoria, articulosCount: count };
+      return { ...category, articleCount: count };
     })
   );
 
@@ -76,7 +76,7 @@ export default async function AdminCategoriasPage({
         </Link>
       </div>
 
-      {categoriasConConteo.length === 0 ? (
+      {categoriesWithCount.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="mb-4 text-muted-foreground">
@@ -90,21 +90,21 @@ export default async function AdminCategoriasPage({
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categoriasConConteo.map((categoria) => (
-              <Card key={categoria.id}>
+            {categoriesWithCount.map((category) => (
+              <Card key={category.id}>
                 <CardHeader>
                   <CardTitle className="font-serif text-xl">
-                    {categoria.nombre}
+                    {category.nombre}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Badge variant="secondary">
-                    {categoria.articulosCount} artículos
+                    {category.articleCount} artículos
                   </Badge>
                 </CardContent>
                 <CardFooter className="flex gap-2">
                   <Link
-                    href={`/admin/categorias/${categoria.id}/editar`}
+                    href={`/admin/categorias/${category.id}/editar`}
                     className="flex-1"
                   >
                     <Button
@@ -116,9 +116,9 @@ export default async function AdminCategoriasPage({
                       Editar
                     </Button>
                   </Link>
-                  <DeleteCategoriaButton
-                    categoriaId={categoria.id}
-                    disabled={categoria.articulosCount > 0}
+                  <DeleteCategoryButton
+                    categoryId={category.id}
+                    disabled={category.articleCount > 0}
                   />
                 </CardFooter>
               </Card>

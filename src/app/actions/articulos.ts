@@ -7,7 +7,7 @@ import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import type { ArticuloFormData, Articulo } from "@/lib/types";
 import { requireAdmin } from "./auth";
 
-export async function createArticulo(data: ArticuloFormData) {
+export async function createArticle(data: ArticuloFormData) {
   await requireAdmin();
 
   const baseSlug = generateSlug(data.titulo);
@@ -16,7 +16,7 @@ export async function createArticulo(data: ArticuloFormData) {
     return !!existing;
   });
 
-  const articulo = await prisma.articulo.create({
+  const article = await prisma.articulo.create({
     data: {
       titulo: data.titulo,
       slug,
@@ -26,8 +26,8 @@ export async function createArticulo(data: ArticuloFormData) {
       autors: data.autors && data.autors.length > 0 ? data.autors : ["Anónimo"],
       publicado: data.publicado,
       articuloCategorias: {
-        create: data.categorias.map((categoriaId) => ({
-          categoriaId,
+        create: data.categorias.map((categoryId) => ({
+          categoriaId: categoryId,
         })),
       },
     },
@@ -38,19 +38,19 @@ export async function createArticulo(data: ArticuloFormData) {
   redirect("/admin/articulos");
 }
 
-export async function updateArticulo(id: string, data: ArticuloFormData) {
+export async function updateArticle(id: string, data: ArticuloFormData) {
   await requireAdmin();
 
-  const articulo = await prisma.articulo.findUnique({
+  const article = await prisma.articulo.findUnique({
     where: { id },
   });
 
-  if (!articulo) {
+  if (!article) {
     throw new Error("Artículo no encontrado");
   }
 
-  let slug = articulo.slug;
-  if (data.titulo !== articulo.titulo) {
+  let slug = article.slug;
+  if (data.titulo !== article.titulo) {
     const baseSlug = generateSlug(data.titulo);
     slug = await generateUniqueSlug(
       baseSlug,
@@ -76,8 +76,8 @@ export async function updateArticulo(id: string, data: ArticuloFormData) {
       publicado: data.publicado,
       articuloCategorias: {
         deleteMany: {},
-        create: data.categorias.map((categoriaId) => ({
-          categoriaId,
+        create: data.categorias.map((categoryId) => ({
+          categoriaId: categoryId,
         })),
       },
     },
@@ -89,14 +89,14 @@ export async function updateArticulo(id: string, data: ArticuloFormData) {
   redirect("/admin/articulos");
 }
 
-export async function deleteArticulo(id: string) {
+export async function deleteArticle(id: string) {
   await requireAdmin();
 
-  const articulo = await prisma.articulo.findUnique({
+  const article = await prisma.articulo.findUnique({
     where: { id },
   });
 
-  if (!articulo) {
+  if (!article) {
     throw new Error("Artículo no encontrado");
   }
 
@@ -108,21 +108,21 @@ export async function deleteArticulo(id: string) {
   revalidatePath("/articulos");
 }
 
-export async function togglePublicado(id: string) {
+export async function togglePublished(id: string) {
   await requireAdmin();
 
-  const articulo = await prisma.articulo.findUnique({
+  const article = await prisma.articulo.findUnique({
     where: { id },
   });
 
-  if (!articulo) {
+  if (!article) {
     throw new Error("Artículo no encontrado");
   }
 
   await prisma.articulo.update({
     where: { id },
     data: {
-      publicado: !articulo.publicado,
+      publicado: !article.publicado,
     },
   });
 
@@ -130,22 +130,22 @@ export async function togglePublicado(id: string) {
   revalidatePath("/articulos");
 }
 
-export async function getArticulos(options?: {
-  publicado?: boolean;
-  categoriaSlug?: string;
+export async function getArticles(options?: {
+  published?: boolean;
+  categorySlug?: string;
   search?: string;
 }): Promise<Articulo[]> {
   const where: any = {};
 
-  if (options?.publicado !== undefined) {
-    where.publicado = options.publicado;
+  if (options?.published !== undefined) {
+    where.publicado = options.published;
   }
 
-  if (options?.categoriaSlug) {
+  if (options?.categorySlug) {
     where.articuloCategorias = {
       some: {
         categoria: {
-          slug: options.categoriaSlug,
+          slug: options.categorySlug,
         },
       },
     };
@@ -174,9 +174,9 @@ export async function getArticulos(options?: {
   }) as Promise<Articulo[]>;
 }
 
-export async function getArticulosWithPagination(options?: {
-  publicado?: boolean;
-  categoriaSlug?: string;
+export async function getArticlesWithPagination(options?: {
+  published?: boolean;
+  categorySlug?: string;
   search?: string;
   page?: number;
   pageSize?: number;
@@ -187,15 +187,15 @@ export async function getArticulosWithPagination(options?: {
 
   const where: any = {};
 
-  if (options?.publicado !== undefined) {
-    where.publicado = options.publicado;
+  if (options?.published !== undefined) {
+    where.publicado = options.published;
   }
 
-  if (options?.categoriaSlug) {
+  if (options?.categorySlug) {
     where.articuloCategorias = {
       some: {
         categoria: {
-          slug: options.categoriaSlug,
+          slug: options.categorySlug,
         },
       },
     };
@@ -209,7 +209,7 @@ export async function getArticulosWithPagination(options?: {
     ];
   }
 
-  const allArticulos = await prisma.articulo.findMany({
+  const allArticles = await prisma.articulo.findMany({
     where,
     include: {
       articuloCategorias: {
@@ -223,18 +223,18 @@ export async function getArticulosWithPagination(options?: {
     },
   });
 
-  const total = allArticulos.length;
-  const articulos = allArticulos.slice(skip, skip + pageSize);
+  const total = allArticles.length;
+  const articles = allArticles.slice(skip, skip + pageSize);
 
   return {
-    articulos: articulos as Articulo[],
+    articles: articles as Articulo[],
     totalPages: Math.ceil(total / pageSize),
     currentPage: page,
     total,
   };
 }
 
-export async function getArticuloBySlug(slug: string) {
+export async function getArticleBySlug(slug: string) {
   return prisma.articulo.findUnique({
     where: { slug },
     include: {
@@ -247,7 +247,7 @@ export async function getArticuloBySlug(slug: string) {
   });
 }
 
-export async function getArticuloById(id: string) {
+export async function getArticleById(id: string) {
   return prisma.articulo.findUnique({
     where: { id },
     include: {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { deleteCategoria } from "@/app/actions/categorias";
+import { deleteCategory } from "@/app/actions/categorias";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,22 +17,22 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface DeleteCategoriaButtonProps {
-  categoriaId: string;
+interface DeleteCategoryButtonProps {
+  categoryId: string;
   disabled?: boolean;
 }
 
-export function DeleteCategoriaButton({
-  categoriaId,
+export function DeleteCategoryButton({
+  categoryId,
   disabled,
-}: DeleteCategoriaButtonProps) {
+}: DeleteCategoryButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleDelete() {
     setIsLoading(true);
     try {
-      await deleteCategoria(categoriaId);
+      await deleteCategory(categoryId);
       router.refresh();
     } catch (error) {
       alert(

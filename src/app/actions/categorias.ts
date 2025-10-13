@@ -6,40 +6,40 @@ import { prisma } from "@/lib/db";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { requireAdmin } from "./auth";
 
-export async function createCategoria(nombre: string) {
+export async function createCategory(name: string) {
   await requireAdmin();
 
-  const baseSlug = generateSlug(nombre);
+  const baseSlug = generateSlug(name);
   const slug = await generateUniqueSlug(baseSlug, async (s) => {
     const existing = await prisma.categoria.findUnique({ where: { slug: s } });
     return !!existing;
   });
 
-  const categoria = await prisma.categoria.create({
+  const category = await prisma.categoria.create({
     data: {
-      nombre,
+      nombre: name,
       slug,
     },
   });
 
   revalidatePath("/admin/categorias");
-  return categoria;
+  return category;
 }
 
-export async function updateCategoria(id: string, nombre: string) {
+export async function updateCategory(id: string, name: string) {
   await requireAdmin();
 
-  const categoria = await prisma.categoria.findUnique({
+  const category = await prisma.categoria.findUnique({
     where: { id },
   });
 
-  if (!categoria) {
+  if (!category) {
     throw new Error("Categoría no encontrada");
   }
 
-  let slug = categoria.slug;
-  if (nombre !== categoria.nombre) {
-    const baseSlug = generateSlug(nombre);
+  let slug = category.slug;
+  if (name !== category.nombre) {
+    const baseSlug = generateSlug(name);
     slug = await generateUniqueSlug(
       baseSlug,
       async (s) => {
@@ -55,7 +55,7 @@ export async function updateCategoria(id: string, nombre: string) {
   const updated = await prisma.categoria.update({
     where: { id },
     data: {
-      nombre,
+      nombre: name,
       slug,
     },
   });
@@ -65,21 +65,21 @@ export async function updateCategoria(id: string, nombre: string) {
   return updated;
 }
 
-export async function deleteCategoria(id: string) {
+export async function deleteCategory(id: string) {
   await requireAdmin();
 
-  const categoria = await prisma.categoria.findUnique({
+  const category = await prisma.categoria.findUnique({
     where: { id },
     include: {
       articuloCategorias: true,
     },
   });
 
-  if (!categoria) {
+  if (!category) {
     throw new Error("Categoría no encontrada");
   }
 
-  if (categoria.articuloCategorias.length > 0) {
+  if (category.articuloCategorias.length > 0) {
     throw new Error(
       "No se puede eliminar una categoría con artículos asociados"
     );
@@ -93,7 +93,7 @@ export async function deleteCategoria(id: string) {
   revalidatePath("/categorias");
 }
 
-export async function getCategorias() {
+export async function getCategories() {
   return prisma.categoria.findMany({
     orderBy: {
       nombre: "asc",
@@ -101,7 +101,7 @@ export async function getCategorias() {
   });
 }
 
-export async function getCategoriasWithPagination({
+export async function getCategoriesWithPagination({
   page = 1,
   pageSize = 9,
 }: {
@@ -110,25 +110,25 @@ export async function getCategoriasWithPagination({
 }) {
   const skip = (page - 1) * pageSize;
 
-  const categorias = await prisma.categoria.findMany({
+  const categories = await prisma.categoria.findMany({
     orderBy: {
       nombre: "asc",
     },
   });
 
-  const total = categorias.length;
-  const paginatedCategorias = categorias.slice(skip, skip + pageSize);
+  const total = categories.length;
+  const paginatedCategories = categories.slice(skip, skip + pageSize);
   const totalPages = Math.ceil(total / pageSize);
 
   return {
-    categorias: paginatedCategorias,
+    categories: paginatedCategories,
     totalPages,
     currentPage: page,
     total,
   };
 }
 
-export async function getCategoriaBySlug(slug: string) {
+export async function getCategoryBySlug(slug: string) {
   return prisma.categoria.findUnique({
     where: { slug },
     include: {

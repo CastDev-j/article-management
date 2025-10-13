@@ -11,31 +11,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createArticulo, updateArticulo } from "@/app/actions/articulos";
+import { createArticle, updateArticle } from "@/app/actions/articulos";
 import type { Articulo, Categoria } from "@/lib/types";
 import { Loader2, Plus, X, Eye, Edit } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 
 interface ArticleFormProps {
-  articulo?: Articulo;
-  categorias: Categoria[];
+  article?: Articulo;
+  categories: Categoria[];
 }
 
-export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
+export function ArticleForm({ article, categories }: ArticleFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [selectedCategorias, setSelectedCategorias] = useState<string[]>(
-    articulo?.articuloCategorias.map((ac) => ac.categoria.id) || []
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    article?.articuloCategorias.map((ac) => ac.categoria.id) || []
   );
   const [autors, setAutors] = useState<string[]>(
-    articulo?.autors && articulo.autors.length > 0 ? articulo.autors : [""]
+    article?.autors && article.autors.length > 0 ? article.autors : [""]
   );
 
-  const [titulo, setTitulo] = useState(articulo?.titulo || "");
-  const [descripcion, setDescripcion] = useState(articulo?.descripcion || "");
-  const [contenido, setContenido] = useState(articulo?.contenido || "");
-  const [imagen, setImagen] = useState(articulo?.imagen || "");
+  const [titulo, setTitulo] = useState(article?.titulo || "");
+  const [descripcion, setDescripcion] = useState(article?.descripcion || "");
+  const [contenido, setContenido] = useState(article?.contenido || "");
+  const [imagen, setImagen] = useState(article?.imagen || "");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,14 +51,14 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
         contenido: formData.get("contenido") as string,
         imagen: formData.get("imagen") as string,
         autors: filteredAutors.length > 0 ? filteredAutors : ["Anónimo"],
-        categorias: selectedCategorias,
+        categorias: selectedCategories,
         publicado: formData.get("publicado") === "on",
       };
 
-      if (articulo) {
-        await updateArticulo(articulo.id, data);
+      if (article) {
+        await updateArticle(article.id, data);
       } else {
-        await createArticulo(data);
+        await createArticle(data);
       }
     } catch (error) {
       alert("Error al guardar el artículo");
@@ -67,11 +67,11 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
     }
   }
 
-  function toggleCategoria(categoriaId: string) {
-    setSelectedCategorias((prev) =>
-      prev.includes(categoriaId)
-        ? prev.filter((id) => id !== categoriaId)
-        : [...prev, categoriaId]
+  function toggleCategory(categoryId: string) {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
     );
   }
 
@@ -234,24 +234,24 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
                   Categorías
                 </Label>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {categorias.map((categoria) => (
-                    <div key={categoria.id} className="flex items-center gap-2">
+                  {categories.map((category) => (
+                    <div key={category.id} className="flex items-center gap-2">
                       <Checkbox
-                        id={categoria.id}
-                        checked={selectedCategorias.includes(categoria.id)}
-                        onCheckedChange={() => toggleCategoria(categoria.id)}
+                        id={category.id}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={() => toggleCategory(category.id)}
                       />
-                      <Label htmlFor={categoria.id} className="cursor-pointer">
-                        {categoria.nombre}
+                      <Label htmlFor={category.id} className="cursor-pointer">
+                        {category.nombre}
                       </Label>
                     </div>
                   ))}
                 </div>
-                {selectedCategorias.length > 0 && (
+                {selectedCategories.length > 0 && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    ✓ {selectedCategorias.length} categoría
-                    {selectedCategorias.length > 1 ? "s" : ""} seleccionada
-                    {selectedCategorias.length > 1 ? "s" : ""}
+                    ✓ {selectedCategories.length} categoría
+                    {selectedCategories.length > 1 ? "s" : ""} seleccionada
+                    {selectedCategories.length > 1 ? "s" : ""}
                   </p>
                 )}
               </div>
@@ -261,7 +261,7 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
                   <Checkbox
                     id="publicado"
                     name="publicado"
-                    defaultChecked={articulo?.publicado}
+                    defaultChecked={article?.publicado}
                   />
                   <Label htmlFor="publicado" className="cursor-pointer">
                     Publicar artículo inmediatamente
@@ -298,16 +298,16 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
                   </div>
                 </div>
 
-                {selectedCategorias.length > 0 && (
+                {selectedCategories.length > 0 && (
                   <div className="mb-8 flex flex-wrap gap-2">
-                    {categorias
-                      .filter((c) => selectedCategorias.includes(c.id))
-                      .map((categoria) => (
+                    {categories
+                      .filter((c) => selectedCategories.includes(c.id))
+                      .map((category) => (
                         <span
-                          key={categoria.id}
+                          key={category.id}
                           className="rounded-full border border-border px-3 py-1 font-sans text-xs uppercase tracking-wider"
                         >
-                          {categoria.nombre}
+                          {category.nombre}
                         </span>
                       ))}
                   </div>
@@ -442,7 +442,7 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
       <div className="flex gap-4">
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {articulo ? "Actualizar" : "Crear"} Artículo
+          {article ? "Actualizar" : "Crear"} Artículo
         </Button>
         <Button
           type="button"

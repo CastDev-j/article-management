@@ -1,4 +1,4 @@
-import { CategoriaForm } from "@/components/categoria-form";
+import { CategoryForm } from "@/components/categoria-form";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { checkIsAdmin } from "@/app/actions/auth";
@@ -25,7 +25,7 @@ export default async function NuevaCategoriaPage() {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-8 font-serif text-4xl font-bold">Nueva Categoría</h1>
-      <CategoriaForm />
+      <CategoryForm />
     </div>
   );
 }

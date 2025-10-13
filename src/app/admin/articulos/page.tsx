@@ -9,10 +9,10 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getArticulosWithPagination } from "@/app/actions/articulos";
+import { getArticlesWithPagination } from "@/app/actions/articulos";
 import { Plus, Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/delete-button";
-import { TogglePublicadoButton } from "@/components/toggle-publicado-button";
+import { TogglePublishedButton } from "@/components/toggle-publicado-button";
 import type { Metadata } from "next";
 import { checkIsAdmin } from "@/app/actions/auth";
 import { PaginationWrapper } from "@/components/pagination-wrapper";
@@ -42,7 +42,7 @@ export default async function AdminArticulosPage({
   const params = await searchParams;
   const currentPage = parseInt(params.page || "1");
 
-  const { articulos, totalPages, total } = await getArticulosWithPagination({
+  const { articles, totalPages, total } = await getArticlesWithPagination({
     page: currentPage,
     pageSize: 9,
   });
@@ -64,7 +64,7 @@ export default async function AdminArticulosPage({
         </Link>
       </div>
 
-      {articulos.length === 0 ? (
+      {articles.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="mb-4 text-muted-foreground">
@@ -78,30 +78,30 @@ export default async function AdminArticulosPage({
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {articulos.map((articulo) => (
-              <Card key={articulo.id} className="flex flex-col justify-between">
+            {articles.map((article) => (
+              <Card key={article.id} className="flex flex-col justify-between">
                 <div>
                   <CardHeader>
                     <div className="mb-2 flex items-start justify-between gap-2">
                       <h3 className="line-clamp-2 text-balance text-lg font-semibold">
-                        {articulo.titulo}
+                        {article.titulo}
                       </h3>
                       <Badge
-                        variant={articulo.publicado ? "default" : "secondary"}
+                        variant={article.publicado ? "default" : "secondary"}
                       >
-                        {articulo.publicado ? "Publicado" : "Borrador"}
+                        {article.publicado ? "Publicado" : "Borrador"}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {articulo.descripcion && (
+                    {article.descripcion && (
                       <p className="line-clamp-3 text-pretty text-sm text-muted-foreground">
-                        {articulo.descripcion}
+                        {article.descripcion}
                       </p>
                     )}
-                    {(articulo as any).articuloCategorias?.length > 0 && (
+                    {(article as any).articuloCategorias?.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {(articulo as any).articuloCategorias.map(
+                        {(article as any).articuloCategorias.map(
                           ({ categoria }: any) => (
                             <Badge key={categoria.id} variant="outline">
                               {categoria.nombre}
@@ -115,7 +115,7 @@ export default async function AdminArticulosPage({
 
                 <CardFooter className="flex gap-2">
                   <Link
-                    href={`/admin/articulos/${articulo.id}/editar`}
+                    href={`/admin/articulos/${article.id}/editar`}
                     className="flex-1"
                   >
                     <Button
@@ -127,11 +127,11 @@ export default async function AdminArticulosPage({
                       Editar
                     </Button>
                   </Link>
-                  <TogglePublicadoButton
-                    articuloId={articulo.id}
-                    publicado={articulo.publicado}
+                  <TogglePublishedButton
+                    articleId={article.id}
+                    published={article.publicado}
                   />
-                  <DeleteButton articuloId={articulo.id} />
+                  <DeleteButton articleId={article.id} />
                 </CardFooter>
               </Card>
             ))}

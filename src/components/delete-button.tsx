@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { deleteArticulo } from "@/app/actions/articulos";
+import { deleteArticle } from "@/app/actions/articulos";
 import { Trash2, Loader2 } from "lucide-react";
 
-export function DeleteButton({ articuloId }: { articuloId: string }) {
+export function DeleteButton({ articleId }: { articleId: string }) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
@@ -15,7 +15,7 @@ export function DeleteButton({ articuloId }: { articuloId: string }) {
 
     setLoading(true);
     try {
-      await deleteArticulo(articuloId);
+      await deleteArticle(articleId);
     } catch (error) {
       alert("Error al eliminar el artículo");
     } finally {

@@ -16,25 +16,25 @@ export const metadata: Metadata = {
     "Explora todos nuestros artículos. Busca y filtra por categorías.",
 };
 
-const ARTICULOS_POR_PAGINA = 9;
+const ARTICLES_PER_PAGE = 9;
 
 export default async function TodosLosArticulosPage({
   searchParams,
 }: {
   searchParams: { q?: string; categorias?: string; page?: string };
 }) {
-  const busqueda = searchParams.q || "";
-  const categoriasParam = searchParams.categorias || "";
-  const categoriasSlugs = categoriasParam ? categoriasParam.split(",") : [];
-  const paginaActual = parseInt(searchParams.page || "1", 10);
+  const searchQuery = searchParams.q || "";
+  const categoriesParam = searchParams.categorias || "";
+  const categorySlugs = categoriesParam ? categoriesParam.split(",") : [];
+  const currentPage = parseInt(searchParams.page || "1", 10);
 
-  const todasCategorias = await prisma.categoria.findMany({
+  const allCategories = await prisma.categoria.findMany({
     orderBy: {
       nombre: "asc",
     },
   });
 
-  const todosArticulos = await prisma.articulo.findMany({
+  const allArticles = await prisma.articulo.findMany({
     where: {
       publicado: true,
     },
@@ -50,55 +50,55 @@ export default async function TodosLosArticulosPage({
     },
   });
 
-  let articulosFiltrados = todosArticulos;
+  let filteredArticles = allArticles;
 
-  if (categoriasSlugs.length > 0) {
-    articulosFiltrados = articulosFiltrados.filter((articulo: any) =>
-      categoriasSlugs.every((slug: string) =>
-        articulo.articuloCategorias?.some(
+  if (categorySlugs.length > 0) {
+    filteredArticles = filteredArticles.filter((article: any) =>
+      categorySlugs.every((slug: string) =>
+        article.articuloCategorias?.some(
           (ac: any) => ac.categoria.slug === slug
         )
       )
     );
   }
 
-  if (busqueda) {
-    articulosFiltrados = articulosFiltrados.filter(
-      (articulo: any) =>
-        articulo.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        articulo.descripcion?.toLowerCase().includes(busqueda.toLowerCase())
+  if (searchQuery) {
+    filteredArticles = filteredArticles.filter(
+      (article: any) =>
+        article.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        article.descripcion?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
 
-  const totalArticulos = articulosFiltrados.length;
-  const articulosPaginados = articulosFiltrados.slice(
-    (paginaActual - 1) * ARTICULOS_POR_PAGINA,
-    paginaActual * ARTICULOS_POR_PAGINA
+  const totalArticles = filteredArticles.length;
+  const paginatedArticles = filteredArticles.slice(
+    (currentPage - 1) * ARTICLES_PER_PAGE,
+    currentPage * ARTICLES_PER_PAGE
   );
 
-  const totalPaginas = Math.ceil(totalArticulos / ARTICULOS_POR_PAGINA);
-  const categoriasActivas = todasCategorias.filter((c) =>
-    categoriasSlugs.includes(c.slug)
+  const totalPages = Math.ceil(totalArticles / ARTICLES_PER_PAGE);
+  const activeCategories = allCategories.filter((c) =>
+    categorySlugs.includes(c.slug)
   );
 
-  const buildFilterUrl = (newCategorias: string[], newBusqueda?: string) => {
+  const buildFilterUrl = (newCategories: string[], newSearch?: string) => {
     const params = new URLSearchParams();
-    if (newCategorias.length > 0) {
-      params.set("categorias", newCategorias.join(","));
+    if (newCategories.length > 0) {
+      params.set("categorias", newCategories.join(","));
     }
-    if (newBusqueda !== undefined ? newBusqueda : busqueda) {
-      params.set("q", newBusqueda !== undefined ? newBusqueda : busqueda);
+    if (newSearch !== undefined ? newSearch : searchQuery) {
+      params.set("q", newSearch !== undefined ? newSearch : searchQuery);
     }
     return `/todos-los-articulos${
       params.toString() ? `?${params.toString()}` : ""
     }`;
   };
 
-  const toggleCategoria = (slug: string) => {
-    const newCategorias = categoriasSlugs.includes(slug)
-      ? categoriasSlugs.filter((s) => s !== slug)
-      : [...categoriasSlugs, slug];
-    return buildFilterUrl(newCategorias);
+  const toggleCategory = (slug: string) => {
+    const newCategories = categorySlugs.includes(slug)
+      ? categorySlugs.filter((s) => s !== slug)
+      : [...categorySlugs, slug];
+    return buildFilterUrl(newCategories);
   };
 
   return (
@@ -111,7 +111,7 @@ export default async function TodosLosArticulosPage({
           </h1>
 
           <form action="/todos-los-articulos" method="get" className="mb-0">
-            <input type="hidden" name="categorias" value={categoriasParam} />
+            <input type="hidden" name="categorias" value={categoriesParam} />
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -119,7 +119,7 @@ export default async function TodosLosArticulosPage({
                   type="search"
                   name="q"
                   placeholder="Buscar artículos..."
-                  defaultValue={busqueda}
+                  defaultValue={searchQuery}
                   className="pl-10 h-10"
                 />
               </div>
@@ -136,51 +136,51 @@ export default async function TodosLosArticulosPage({
               Filtrar por categoría:
             </h2>
             <div className="flex flex-wrap gap-1.5 md:gap-2">
-              {todasCategorias.map((categoria) => (
-                <Link key={categoria.id} href={toggleCategoria(categoria.slug)}>
+              {allCategories.map((category) => (
+                <Link key={category.id} href={toggleCategory(category.slug)}>
                   <Badge
                     variant={
-                      categoriasSlugs.includes(categoria.slug)
+                      categorySlugs.includes(category.slug)
                         ? "default"
                         : "outline"
                     }
                     className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-xs md:text-sm"
                   >
-                    {categoria.nombre}
+                    {category.nombre}
                   </Badge>
                 </Link>
               ))}
             </div>
           </div>
 
-          {(busqueda || categoriasSlugs.length > 0) && (
+          {(searchQuery || categorySlugs.length > 0) && (
             <div className="pt-3 md:pt-4 border-t">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4">
                 <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                   <span className="text-xs md:text-sm font-medium text-muted-foreground">
                     Filtros activos:
                   </span>
-                  {busqueda && (
-                    <Link href={buildFilterUrl(categoriasSlugs, "")}>
+                  {searchQuery && (
+                    <Link href={buildFilterUrl(categorySlugs, "")}>
                       <Badge
                         variant="default"
                         className="cursor-pointer hover:bg-primary/80 text-xs"
                       >
-                        Búsqueda: &quot;{busqueda}&quot;
+                        Búsqueda: &quot;{searchQuery}&quot;
                         <X className="h-3 w-3 ml-1" />
                       </Badge>
                     </Link>
                   )}
-                  {categoriasActivas.map((categoria) => (
+                  {activeCategories.map((category) => (
                     <Link
-                      key={categoria.id}
-                      href={toggleCategoria(categoria.slug)}
+                      key={category.id}
+                      href={toggleCategory(category.slug)}
                     >
                       <Badge
                         variant="default"
                         className="cursor-pointer hover:bg-primary/80 text-xs"
                       >
-                        {categoria.nombre}
+                        {category.nombre}
                         <X className="h-3 w-3 ml-1" />
                       </Badge>
                     </Link>
@@ -200,30 +200,30 @@ export default async function TodosLosArticulosPage({
           )}
         </div>
 
-        {(busqueda || categoriasSlugs.length > 0) && (
+        {(searchQuery || categorySlugs.length > 0) && (
           <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6">
-            Mostrando {totalArticulos} resultado
-            {totalArticulos !== 1 ? "s" : ""}
-            {busqueda && ` para "${busqueda}"`}
-            {categoriasActivas.length > 0 &&
-              ` en: ${categoriasActivas.map((c) => c.nombre).join(", ")}`}
+            Mostrando {totalArticles} resultado
+            {totalArticles !== 1 ? "s" : ""}
+            {searchQuery && ` para "${searchQuery}"`}
+            {activeCategories.length > 0 &&
+              ` en: ${activeCategories.map((c) => c.nombre).join(", ")}`}
           </p>
         )}
 
-        {articulosPaginados.length > 0 ? (
+        {paginatedArticles.length > 0 ? (
           <div className="space-y-0">
-            {articulosPaginados.map((articulo: any, index: number) => (
-              <div key={articulo.id}>
+            {paginatedArticles.map((article: any, index: number) => (
+              <div key={article.id}>
                 <Link
-                  href={`/articulos/${articulo.slug}`}
+                  href={`/articulos/${article.slug}`}
                   className="block group"
                 >
                   <article className="py-4 md:py-6 flex gap-3 md:gap-6 hover:bg-muted/50 transition-colors rounded-lg px-2 md:px-4">
-                    {articulo.imagen && (
+                    {article.imagen && (
                       <div className="relative w-24 h-20 md:w-32 md:h-24 flex-shrink-0 overflow-hidden rounded-md">
                         <Image
-                          src={articulo.imagen}
-                          alt={articulo.titulo}
+                          src={article.imagen}
+                          alt={article.titulo}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -234,15 +234,15 @@ export default async function TodosLosArticulosPage({
                       <div className="flex flex-col h-full">
                         <div className="flex-1">
                           <h2 className="text-lg md:text-xl font-serif font-bold mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                            {articulo.titulo}
+                            {article.titulo}
                           </h2>
-                          {articulo.descripcion && (
+                          {article.descripcion && (
                             <p className="text-muted-foreground text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
-                              {articulo.descripcion}
+                              {article.descripcion}
                             </p>
                           )}
                           <div className="flex items-center gap-1.5 md:gap-2 flex-wrap mb-2">
-                            {articulo.articuloCategorias?.map((ac: any) => (
+                            {article.articuloCategorias?.map((ac: any) => (
                               <CategoryBadge
                                 key={ac.categoriaId}
                                 slug={ac.categoria.slug}
@@ -255,7 +255,7 @@ export default async function TodosLosArticulosPage({
                         </div>
                         <div className="flex justify-end mt-1 md:mt-2">
                           <span className="text-[10px] md:text-xs text-muted-foreground">
-                            {new Date(articulo.createdAt).toLocaleDateString(
+                            {new Date(article.createdAt).toLocaleDateString(
                               "es-ES",
                               {
                                 year: "numeric",
@@ -269,7 +269,7 @@ export default async function TodosLosArticulosPage({
                     </div>
                   </article>
                 </Link>
-                {index < articulosPaginados.length - 1 && <Separator />}
+                {index < paginatedArticles.length - 1 && <Separator />}
               </div>
             ))}
           </div>
@@ -278,7 +278,7 @@ export default async function TodosLosArticulosPage({
             <p className="text-lg md:text-xl text-muted-foreground mb-2">
               No se encontraron artículos.
             </p>
-            {(busqueda || categoriasSlugs.length > 0) && (
+            {(searchQuery || categorySlugs.length > 0) && (
               <Link href="/todos-los-articulos">
                 <Button variant="outline" className="mt-4">
                   Ver todos los artículos
@@ -288,28 +288,28 @@ export default async function TodosLosArticulosPage({
           </div>
         )}
 
-        {totalPaginas > 1 && articulosPaginados.length > 0 && (
+        {totalPages > 1 && paginatedArticles.length > 0 && (
           <div className="mt-12 flex justify-center gap-2">
-            {paginaActual > 1 && (
+            {currentPage > 1 && (
               <Link
-                href={`/todos-los-articulos?page=${paginaActual - 1}${
-                  categoriasParam ? `&categorias=${categoriasParam}` : ""
-                }${busqueda ? `&q=${busqueda}` : ""}`}
+                href={`/todos-los-articulos?page=${currentPage - 1}${
+                  categoriesParam ? `&categorias=${categoriesParam}` : ""
+                }${searchQuery ? `&q=${searchQuery}` : ""}`}
               >
                 <Button variant="outline">Anterior</Button>
               </Link>
             )}
             <div className="flex items-center gap-2">
-              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                 (page) => (
                   <Link
                     key={page}
                     href={`/todos-los-articulos?page=${page}${
-                      categoriasParam ? `&categorias=${categoriasParam}` : ""
-                    }${busqueda ? `&q=${busqueda}` : ""}`}
+                      categoriesParam ? `&categorias=${categoriesParam}` : ""
+                    }${searchQuery ? `&q=${searchQuery}` : ""}`}
                   >
                     <Button
-                      variant={page === paginaActual ? "default" : "outline"}
+                      variant={page === currentPage ? "default" : "outline"}
                       size="sm"
                     >
                       {page}
@@ -318,11 +318,11 @@ export default async function TodosLosArticulosPage({
                 )
               )}
             </div>
-            {paginaActual < totalPaginas && (
+            {currentPage < totalPages && (
               <Link
-                href={`/todos-los-articulos?page=${paginaActual + 1}${
-                  categoriasParam ? `&categorias=${categoriasParam}` : ""
-                }${busqueda ? `&q=${busqueda}` : ""}`}
+                href={`/todos-los-articulos?page=${currentPage + 1}${
+                  categoriesParam ? `&categorias=${categoriesParam}` : ""
+                }${searchQuery ? `&q=${searchQuery}` : ""}`}
               >
                 <Button variant="outline">Siguiente</Button>
               </Link>

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { ArticleForm } from "@/components/article-form";
-import { getCategorias } from "@/app/actions/categorias";
+import { getCategories } from "@/app/actions/categorias";
 import type { Metadata } from "next";
 import { checkIsAdmin } from "@/app/actions/auth";
 
@@ -23,12 +23,12 @@ export default async function NuevoArticuloPage() {
     redirect("/");
   }
 
-  const categorias = await getCategorias();
+  const categories = await getCategories();
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-8 text-4xl font-bold">Nuevo Artículo</h1>
-      <ArticleForm categorias={categorias} />
+      <ArticleForm categories={categories} />
     </div>
   );
 }
