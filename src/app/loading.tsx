@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PublicHeader } from "@/components/public-header";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function Loading() {
   return (
@@ -9,8 +9,8 @@ export default function Loading() {
       <PublicHeader />
       <main>
         <section className="container mx-auto px-4 py-6">
-          <div className="relative overflow-hidden rounded-xl bg-muted">
-            <Skeleton className="h-[400px] md:h-[500px] lg:h-[600px] w-full" />
+          <div className="relative overflow-hidden bg-muted">
+            <Skeleton className="h-[400px] md:h-[500px] lg:h-[600px] w-full rounded-none" />
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-full max-w-2xl px-4 md:px-8 space-y-2 md:space-y-4">
@@ -34,17 +34,17 @@ export default function Loading() {
               variant="outline"
               size="icon"
               disabled
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 size-8 rounded-full"
             >
-              <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+              <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
             <Button
               variant="outline"
               size="icon"
               disabled
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 size-8 rounded-full"
             >
-              <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </div>
         </section>
