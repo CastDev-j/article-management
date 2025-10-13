@@ -82,7 +82,7 @@ export async function AdminHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px] sm:w-[320px]">
-              <div className="flex flex-col gap-6 pt-8">
+              <div className="flex flex-col gap-6 pt-8 px-4">
                 <nav className="flex flex-col gap-2">
                   <Link
                     href="/"
