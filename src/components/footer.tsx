@@ -3,8 +3,18 @@ import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export async function Footer() {
-  const { userId } = await auth();
-  const isAdmin = await checkIsAdmin(userId);
+  let userId: string | null = null;
+  let isAdmin = false;
+
+  try {
+    const authResult = await auth();
+    userId = authResult.userId;
+    if (userId) {
+      isAdmin = await checkIsAdmin(userId);
+    }
+  } catch (error) {
+    console.log("Auth not available in this context");
+  }
 
   return (
     <footer className="mt-auto border-t bg-muted/50">
@@ -14,8 +24,9 @@ export async function Footer() {
             <h3 className="mb-4 text-lg font-semibold">Gestión de Artículos</h3>
             <div>
               <p className="text-pretty text-sm text-muted-foreground mb-3">
-                Sistema completo de gestión de artículos con categorías y
-                búsqueda.
+                Plataforma para gestionar y consultar artículos de manera
+                eficiente, proporcionando acceso rápido a la información
+                relevante.
               </p>
             </div>
           </div>
@@ -74,9 +85,9 @@ export async function Footer() {
                 </>
               ) : (
                 <li>
-                  <span className="text-muted-foreground">
+                  <Link href="/admin" className="text-muted-foreground">
                     Inicia sesión para acceder a la administración
-                  </span>
+                  </Link>
                 </li>
               )}
             </ul>

@@ -1,5 +1,4 @@
 import { CategoriaForm } from "@/components/categoria-form";
-import { AdminHeader } from "@/components/admin-header";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { checkIsAdmin } from "@/app/actions/auth";
@@ -24,12 +23,9 @@ export default async function NuevaCategoriaPage() {
   }
 
   return (
-    <>
-      <AdminHeader />
-      <main className="container mx-auto max-w-2xl px-4 py-8">
-        <h1 className="mb-8 font-serif text-4xl font-bold">Nueva Categoría</h1>
-        <CategoriaForm />
-      </main>
-    </>
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <h1 className="mb-8 font-serif text-4xl font-bold">Nueva Categoría</h1>
+      <CategoriaForm />
+    </div>
   );
 }

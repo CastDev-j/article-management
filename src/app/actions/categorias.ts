@@ -103,7 +103,7 @@ export async function getCategorias() {
 
 export async function getCategoriasWithPagination({
   page = 1,
-  pageSize = 12,
+  pageSize = 9,
 }: {
   page?: number;
   pageSize?: number;

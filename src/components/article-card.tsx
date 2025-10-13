@@ -56,10 +56,7 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
         </CardContent>
         <CardFooter className="border-t pt-4">
           <div className="flex w-full flex-col gap-2 font-sans text-xs">
-            <div className="flex items-center justify-between tracking-wide text-muted-foreground">
-              <span className="font-semibold uppercase">
-                {articulo.autors.join(", ")}
-              </span>
+            <div className="flex items-center justify-end tracking-wide text-muted-foreground">
               <time
                 dateTime={articulo.createdAt.toISOString()}
                 className="font-medium uppercase"

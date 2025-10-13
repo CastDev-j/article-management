@@ -4,7 +4,6 @@ import { ArticleForm } from "@/components/article-form";
 import { getArticuloById } from "@/app/actions/articulos";
 import { getCategorias } from "@/app/actions/categorias";
 import type { Metadata } from "next";
-import { AdminHeader } from "@/components/admin-header";
 import { checkIsAdmin } from "@/app/actions/auth";
 
 export async function generateMetadata({
@@ -55,12 +54,9 @@ export default async function EditarArticuloPage({
   }
 
   return (
-    <>
-      <AdminHeader />
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="mb-8 text-4xl font-bold">Editar Artículo</h1>
-        <ArticleForm articulo={articulo} categorias={categorias} />
-      </main>
-    </>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-8 text-4xl font-bold">Editar Artículo</h1>
+      <ArticleForm articulo={articulo} categorias={categorias} />
+    </div>
   );
 }

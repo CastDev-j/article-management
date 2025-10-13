@@ -1,62 +1,70 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import { AdminHeader } from "@/components/admin-header";
-import { auth } from "@clerk/nextjs/server";
-import { checkIsAdmin } from "@/app/actions/auth";
+import { PublicHeader } from "@/components/public-header";
+import { FeaturedCarousel } from "@/components/featured-carousel";
+import { ArticleGrid } from "@/components/article-grid";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Gestión de Artículos | Sistema de Gestión de Contenido",
+  title: "El Periódico | Inicio",
   description:
-    "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación. Crea, organiza y publica contenido fácilmente.",
-  keywords: ["gestión de artículos", "CMS", "blog", "categorías", "búsqueda"],
+    "Lee los últimos artículos y noticias. Mantente informado con nuestro contenido actualizado.",
+  keywords: ["artículos", "noticias", "blog", "información", "actualidad"],
   openGraph: {
-    title: "Gestión de Artículos | Sistema de Gestión de Contenido",
+    title: "El Periódico | Inicio",
     description:
-      "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación.",
+      "Lee los últimos artículos y noticias. Mantente informado con nuestro contenido actualizado.",
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Gestión de Artículos",
-    description:
-      "Sistema completo de gestión de artículos con categorías, búsqueda y autenticación.",
   },
 };
 
 export default async function HomePage() {
-  const { userId } = await auth();
-  const isAdmin = await checkIsAdmin(userId);
+  const featuredArticles = await prisma.articulo.findMany({
+    where: {
+      publicado: true,
+    },
+    include: {
+      articuloCategorias: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const featured = featuredArticles.slice(0, 5);
+  const recent = featuredArticles.slice(5, 11);
 
   return (
     <>
-      <AdminHeader />
-      <main className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-3xl text-center min-h-[70vh] flex flex-col justify-center">
-          <h1 className="mb-6 text-balance text-5xl font-bold leading-tight lg:text-6xl">
-            Sistema de Gestión de Artículos
-          </h1>
-          <p className="mb-8 text-pretty text-xl leading-relaxed text-muted-foreground">
-            Crea, organiza y publica artículos con un sistema completo de
-            categorías y búsqueda.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/articulos">
-              <Button size="lg" className="gap-2">
-                Ver Artículos
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            {isAdmin && (
-              <Link href="/admin/articulos">
-                <Button size="lg" variant="outline">
-                  Crear Artículo
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
+      <PublicHeader />
+      <main>
+        {featured.length > 0 && (
+          <section className="container mx-auto px-4">
+            <FeaturedCarousel articles={featured} />
+          </section>
+        )}
+
+        {recent.length > 0 && (
+          <section className="container mx-auto px-4">
+            <ArticleGrid
+              articles={recent}
+              title="Últimos Artículos"
+              showViewAll={true}
+            />
+          </section>
+        )}
+
+        {featuredArticles.length === 0 && (
+          <section className="container mx-auto px-4 py-24">
+            <div className="text-center">
+              <h2 className="text-3xl font-serif font-bold mb-4">
+                Próximamente
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Estamos preparando contenido interesante para ti.
+              </p>
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

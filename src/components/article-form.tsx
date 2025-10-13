@@ -107,8 +107,7 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
               <CardTitle>Información Básica</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Título y URL de Imagen en dos columnas */}
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="titulo">Título *</Label>
                   <Input
@@ -139,7 +138,6 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
                 </div>
               </div>
 
-              {/* Descripción - Ancho completo */}
               <div className="space-y-2">
                 <Label htmlFor="descripcion">Descripción</Label>
                 <Textarea
@@ -152,7 +150,6 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
                 />
               </div>
 
-              {/* Autores - Flex wrap con tags compactos */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Autores *</Label>
@@ -227,7 +224,6 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
             </CardContent>
           </Card>
 
-          {/* Categorías y Publicación en una sola carta */}
           <Card>
             <CardHeader>
               <CardTitle>Categorías y Publicación</CardTitle>

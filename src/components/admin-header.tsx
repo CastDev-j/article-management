@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { PenSquare, Search, Menu, FolderOpen, LogOut } from "lucide-react";
+import { PenSquare, FolderOpen, Menu, LogOut, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   SignedIn,
@@ -15,50 +15,51 @@ import { checkIsAdmin } from "@/app/actions/auth";
 export async function AdminHeader() {
   const { userId } = await auth();
   const isAdmin = await checkIsAdmin(userId);
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link
-          href="/"
+          href="/admin"
           className="font-serif text-xl font-semibold transition-colors hover:text-primary"
         >
-          El Periódico
+          Panel de Administración
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           <Link
             href="/"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1"
           >
-            Inicio
+            <Home className="h-4 w-4" />
+            Ver sitio
           </Link>
-          <Link
-            href="/buscar"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            <Search className="h-4 w-4" />
-          </Link>
+          {isAdmin && (
+            <>
+              <Link
+                href="/admin"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/admin/articulos"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                <PenSquare className="mr-1 inline h-4 w-4" />
+                Artículos
+              </Link>
+              <Link
+                href="/admin/categorias"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                <FolderOpen className="mr-1 inline h-4 w-4" />
+                Categorías
+              </Link>
+            </>
+          )}
 
           <SignedIn>
-            {isAdmin && (
-              <>
-                <Link
-                  href="/admin/articulos"
-                  className="text-sm font-medium transition-colors hover:text-primary"
-                >
-                  <PenSquare className="mr-1 inline h-4 w-4" />
-                  Artículos del sitio
-                </Link>
-                <Link
-                  href="/admin/categorias"
-                  className="text-sm font-medium transition-colors hover:text-primary"
-                >
-                  <FolderOpen className="mr-1 inline h-4 w-4" />
-                  Categorías
-                </Link>
-              </>
-            )}
             <UserButton
               fallback={<div className="w-8 h-8 bg-gray-300 rounded-full" />}
             />
@@ -71,9 +72,8 @@ export async function AdminHeader() {
               </Button>
             </SignInButton>
           </SignedOut>
-        </nav>
+        </div>
 
-        {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
@@ -86,25 +86,25 @@ export async function AdminHeader() {
                 <nav className="flex flex-col gap-6">
                   <Link
                     href="/"
-                    className="text-lg font-medium transition-colors hover:text-primary px-4"
-                  >
-                    Inicio
-                  </Link>
-                  <Link
-                    href="/buscar"
                     className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
                   >
-                    <Search className="h-5 w-5" />
-                    Buscar
+                    <Home className="h-5 w-5" />
+                    Ver sitio
                   </Link>
                   {isAdmin && (
-                    <SignedIn>
+                    <>
+                      <Link
+                        href="/admin"
+                        className="text-lg font-medium transition-colors hover:text-primary px-4"
+                      >
+                        Dashboard
+                      </Link>
                       <Link
                         href="/admin/articulos"
                         className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary px-4"
                       >
                         <PenSquare className="h-5 w-5" />
-                        Artículos del sitio
+                        Artículos
                       </Link>
                       <Link
                         href="/admin/categorias"
@@ -113,7 +113,7 @@ export async function AdminHeader() {
                         <FolderOpen className="h-5 w-5" />
                         Categorías
                       </Link>
-                    </SignedIn>
+                    </>
                   )}
                 </nav>
 

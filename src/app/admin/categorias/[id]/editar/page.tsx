@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { AdminHeader } from "@/components/admin-header";
 import { checkIsAdmin } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
@@ -37,12 +36,9 @@ export default async function EditarCategoriaPage({
   }
 
   return (
-    <>
-      <AdminHeader />
-      <main className="container mx-auto max-w-2xl px-4 py-8">
-        <h1 className="mb-8 font-serif text-4xl font-bold">Editar Categoría</h1>
-        <CategoriaForm categoria={categoria} />
-      </main>
-    </>
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <h1 className="mb-8 font-serif text-4xl font-bold">Editar Categoría</h1>
+      <CategoriaForm categoria={categoria} />
+    </div>
   );
 }

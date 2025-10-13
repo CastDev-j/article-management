@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
-import { AdminHeader } from "@/components/admin-header";
+import { PublicHeader } from "@/components/public-header";
 
 export async function generateMetadata({
   params,
@@ -68,9 +68,9 @@ export default async function ArticuloPage({
 
   return (
     <>
-      <AdminHeader />
-      <main className="container mx-auto px-4 py-12">
-        <Link href="/articulos">
+      <PublicHeader />
+      <main className="container mx-auto px-4 pt-4 pb-12">
+        <Link href="/todos-los-articulos">
           <Button variant="ghost" className="mb-8 font-sans text-sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a artículos
@@ -88,12 +88,12 @@ export default async function ArticuloPage({
             </p>
           )}
 
-          <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border pb-6 font-sans text-sm">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-border pb-6 font-sans text-sm">
             <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
               <span className="font-semibold text-foreground">Por</span>
               <span>{articulo.autors.join(", ")}</span>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 items-end">
               <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <time
@@ -108,7 +108,7 @@ export default async function ArticuloPage({
               {articulo.updatedAt &&
                 new Date(articulo.updatedAt).getTime() !==
                   new Date(articulo.createdAt).getTime() && (
-                  <span className="pl-6 text-[11px] italic text-muted-foreground/70">
+                  <span className="text-[11px] italic text-muted-foreground/70">
                     Última actualización:{" "}
                     {format(new Date(articulo.updatedAt), "d 'de' MMMM, yyyy", {
                       locale: es,
@@ -121,7 +121,10 @@ export default async function ArticuloPage({
           {articulo.articuloCategorias.length > 0 && (
             <div className="mb-8 flex flex-wrap gap-2">
               {articulo.articuloCategorias.map(({ categoria }: any) => (
-                <Link key={categoria.id} href={`/categorias/${categoria.slug}`}>
+                <Link
+                  key={categoria.id}
+                  href={`/todos-los-articulos?categorias=${categoria.slug}`}
+                >
                   <Badge
                     variant="outline"
                     className="cursor-pointer font-sans text-xs uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background"
@@ -150,36 +153,40 @@ export default async function ArticuloPage({
             </figure>
           )}
 
-          <div className="article-content mx-auto max-w-none font-serif">
+          <div className="article-content mx-auto max-w-none">
             <ReactMarkdown
               components={{
                 h1: ({ node, ...props }) => (
                   <h1
-                    className="mb-6 mt-10 text-4xl font-bold leading-tight tracking-tight"
+                    className="mb-6 mt-10 font-serif text-4xl font-bold leading-tight tracking-tight"
                     {...props}
                   />
                 ),
                 h2: ({ node, ...props }) => (
                   <h2
-                    className="mb-4 mt-8 border-b-2 border-foreground/10 pb-2 text-3xl font-bold tracking-tight"
+                    className="mb-4 mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-3xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 h3: ({ node, ...props }) => (
                   <h3
-                    className="mb-3 mt-6 text-2xl font-bold tracking-tight"
+                    className="mb-3 mt-6 font-serif text-2xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 h4: ({ node, ...props }) => (
                   <h4
-                    className="mb-2 mt-4 text-xl font-bold tracking-tight"
+                    className="mb-2 mt-4 font-serif text-xl font-bold tracking-tight"
                     {...props}
                   />
                 ),
                 p: ({ node, ...props }) => (
                   <p
-                    className="mb-4 text-lg leading-relaxed text-foreground/90"
+                    className="mb-6 text-[18px] leading-[1.75] tracking-wide text-foreground/95"
+                    style={{
+                      fontFamily:
+                        'Georgia, Cambria, "Times New Roman", Times, serif',
+                    }}
                     {...props}
                   />
                 ),
@@ -191,34 +198,41 @@ export default async function ArticuloPage({
                 ),
                 blockquote: ({ node, ...props }) => (
                   <blockquote
-                    className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 italic text-foreground/80"
+                    className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 font-serif italic text-[17px] leading-[1.7] text-foreground/80"
                     {...props}
                   />
                 ),
                 strong: ({ node, ...props }) => (
-                  <strong className="font-bold text-foreground" {...props} />
+                  <strong
+                    className="font-semibold text-foreground"
+                    {...props}
+                  />
                 ),
                 code: ({ node, inline, ...props }: any) =>
                   inline ? (
                     <code
-                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground"
+                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-[15px] text-foreground"
                       {...props}
                     />
                   ) : (
                     <code
-                      className="block rounded border-2 border-border bg-muted/30 p-4 font-mono text-sm"
+                      className="block rounded border-2 border-border bg-muted/30 p-4 font-mono text-sm leading-relaxed"
                       {...props}
                     />
                   ),
                 ul: ({ node, ...props }) => (
-                  <ul className="my-4 list-disc space-y-2 pl-8" {...props} />
+                  <ul className="my-5 list-disc space-y-3 pl-8" {...props} />
                 ),
                 ol: ({ node, ...props }) => (
-                  <ol className="my-4 list-decimal space-y-2 pl-8" {...props} />
+                  <ol className="my-5 list-decimal space-y-3 pl-8" {...props} />
                 ),
                 li: ({ node, ...props }) => (
                   <li
-                    className="text-lg leading-relaxed text-foreground/90"
+                    className="text-[18px] leading-[1.75] text-foreground/95"
+                    style={{
+                      fontFamily:
+                        'Georgia, Cambria, "Times New Roman", Times, serif',
+                    }}
                     {...props}
                   />
                 ),
@@ -236,7 +250,7 @@ export default async function ArticuloPage({
                       loading="lazy"
                     />
                     {props.alt && (
-                      <span className="mt-2 block text-center text-sm italic text-muted-foreground">
+                      <span className="mt-2 block text-center font-sans text-sm italic text-muted-foreground">
                         {props.alt}
                       </span>
                     )}
