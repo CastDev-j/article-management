@@ -1,5 +1,5 @@
 import { ArticleCard } from "@/components/article-card";
-import { getArticulos } from "@/app/actions/articulos";
+import { getArticulosWithPagination } from "@/app/actions/articulos";
 import { getCategorias } from "@/app/actions/categorias";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Search, X } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { AdminHeader } from "@/components/admin-header";
+import { PaginationWrapper } from "@/components/pagination-wrapper";
 
 export const metadata: Metadata = {
   title: "Buscar Artículos | Gestión de Artículos",
@@ -24,14 +25,18 @@ export const metadata: Metadata = {
 export default async function BuscarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; categoria?: string }>;
+  searchParams: Promise<{ q?: string; categoria?: string; page?: string }>;
 }) {
   const params = await searchParams;
-  const [articulos, categorias] = await Promise.all([
-    getArticulos({
+  const currentPage = parseInt(params.page || "1");
+
+  const [{ articulos, totalPages, total }, categorias] = await Promise.all([
+    getArticulosWithPagination({
       publicado: true,
       search: params.q,
       categoriaSlug: params.categoria,
+      page: currentPage,
+      pageSize: 10,
     }),
     getCategorias(),
   ]);
@@ -137,10 +142,8 @@ export default async function BuscarPage({
 
         <div className="mb-4">
           <p className="text-sm text-muted-foreground">
-            {articulos.length}{" "}
-            {articulos.length === 1
-              ? "artículo encontrado"
-              : "artículos encontrados"}
+            {total}{" "}
+            {total === 1 ? "artículo encontrado" : "artículos encontrados"}
           </p>
         </div>
 
@@ -154,11 +157,18 @@ export default async function BuscarPage({
             </Link>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {articulos.map((articulo) => (
-              <ArticleCard key={articulo.id} articulo={articulo} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {articulos.map((articulo) => (
+                <ArticleCard key={articulo.id} articulo={articulo} />
+              ))}
+            </div>
+            <PaginationWrapper
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath="/buscar"
+            />
+          </>
         )}
       </main>
     </>

@@ -20,6 +20,7 @@ export function TogglePublicadoButton({
       await togglePublicado(articuloId);
     } catch (error) {
       alert("Error al cambiar el estado de publicación");
+    } finally {
       setLoading(false);
     }
   }

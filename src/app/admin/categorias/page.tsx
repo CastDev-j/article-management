@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getCategorias } from "@/app/actions/categorias";
+import { getCategoriasWithPagination } from "@/app/actions/categorias";
 import { Plus, Pencil } from "lucide-react";
 import { DeleteCategoriaButton } from "@/components/delete-categoria-button";
 import { auth } from "@clerk/nextjs/server";
@@ -17,13 +17,18 @@ import { prisma } from "@/lib/db";
 import { AdminHeader } from "@/components/admin-header";
 import { checkIsAdmin } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
+import { PaginationWrapper } from "@/components/pagination-wrapper";
 
 export const metadata: Metadata = {
   title: "Gestión de Categorías | Admin",
   description: "Administra las categorías de artículos",
 };
 
-export default async function AdminCategoriasPage() {
+export default async function AdminCategoriasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -36,7 +41,13 @@ export default async function AdminCategoriasPage() {
     redirect("/");
   }
 
-  const categorias = await getCategorias();
+  const resolvedSearchParams = await searchParams;
+  const currentPage = Number(resolvedSearchParams.page) || 1;
+
+  const { categorias, totalPages, total } = await getCategoriasWithPagination({
+    page: currentPage,
+    pageSize: 10,
+  });
 
   const categoriasConConteo = await Promise.all(
     categorias.map(async (categoria) => {
@@ -52,9 +63,14 @@ export default async function AdminCategoriasPage() {
       <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="font-serif text-4xl font-bold">
-            Gestión de Categorías
-          </h1>
+          <div>
+            <h1 className="font-serif text-4xl font-bold">
+              Gestión de Categorías
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {total} categorías en total
+            </p>
+          </div>
           <Link href="/admin/categorias/nueva">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -75,41 +91,48 @@ export default async function AdminCategoriasPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categoriasConConteo.map((categoria) => (
-              <Card key={categoria.id}>
-                <CardHeader>
-                  <CardTitle className="font-serif text-xl">
-                    {categoria.nombre}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="secondary">
-                    {categoria.articulosCount} artículos
-                  </Badge>
-                </CardContent>
-                <CardFooter className="flex gap-2">
-                  <Link
-                    href={`/admin/categorias/${categoria.id}/editar`}
-                    className="flex-1"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full bg-transparent"
+          <>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {categoriasConConteo.map((categoria) => (
+                <Card key={categoria.id}>
+                  <CardHeader>
+                    <CardTitle className="font-serif text-xl">
+                      {categoria.nombre}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Badge variant="secondary">
+                      {categoria.articulosCount} artículos
+                    </Badge>
+                  </CardContent>
+                  <CardFooter className="flex gap-2">
+                    <Link
+                      href={`/admin/categorias/${categoria.id}/editar`}
+                      className="flex-1"
                     >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Editar
-                    </Button>
-                  </Link>
-                  <DeleteCategoriaButton
-                    categoriaId={categoria.id}
-                    disabled={categoria.articulosCount > 0}
-                  />
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full bg-transparent"
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Editar
+                      </Button>
+                    </Link>
+                    <DeleteCategoriaButton
+                      categoriaId={categoria.id}
+                      disabled={categoria.articulosCount > 0}
+                    />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+            <PaginationWrapper
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath="/admin/categorias"
+            />
+          </>
         )}
       </main>
     </>

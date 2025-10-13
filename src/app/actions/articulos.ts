@@ -174,6 +174,66 @@ export async function getArticulos(options?: {
   }) as Promise<Articulo[]>;
 }
 
+export async function getArticulosWithPagination(options?: {
+  publicado?: boolean;
+  categoriaSlug?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}) {
+  const page = options?.page || 1;
+  const pageSize = options?.pageSize || 12;
+  const skip = (page - 1) * pageSize;
+
+  const where: any = {};
+
+  if (options?.publicado !== undefined) {
+    where.publicado = options.publicado;
+  }
+
+  if (options?.categoriaSlug) {
+    where.articuloCategorias = {
+      some: {
+        categoria: {
+          slug: options.categoriaSlug,
+        },
+      },
+    };
+  }
+
+  if (options?.search) {
+    where.OR = [
+      { titulo: { contains: options.search, mode: "insensitive" } },
+      { descripcion: { contains: options.search, mode: "insensitive" } },
+      { contenido: { contains: options.search, mode: "insensitive" } },
+    ];
+  }
+
+  const allArticulos = await prisma.articulo.findMany({
+    where,
+    include: {
+      articuloCategorias: {
+        include: {
+          categoria: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const total = allArticulos.length;
+  const articulos = allArticulos.slice(skip, skip + pageSize);
+
+  return {
+    articulos: articulos as Articulo[],
+    totalPages: Math.ceil(total / pageSize),
+    currentPage: page,
+    total,
+  };
+}
+
 export async function getArticuloBySlug(slug: string) {
   return prisma.articulo.findUnique({
     where: { slug },

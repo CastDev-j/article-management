@@ -40,6 +40,7 @@ export function DeleteCategoriaButton({
           ? error.message
           : "Error al eliminar la categoría"
       );
+    } finally {
       setIsLoading(false);
     }
   }

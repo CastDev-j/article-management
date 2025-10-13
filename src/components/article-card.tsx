@@ -18,9 +18,9 @@ interface ArticleCardProps {
 export function ArticleCard({ articulo }: ArticleCardProps) {
   return (
     <Link href={`/articulos/${articulo.slug}`} className="group">
-      <Card className="h-full overflow-hidden border-2 transition-all hover:border-foreground hover:shadow-xl pt-0">
+      <Card className="flex h-full flex-col overflow-hidden border-2 transition-all hover:border-foreground hover:shadow-xl">
         {articulo.imagen && (
-          <div className="relative aspect-[16/10] w-full overflow-hidden border-b-2">
+          <div className="relative aspect-[16/9] w-full overflow-hidden border-b-2">
             <Image
               src={articulo.imagen || "/placeholder.svg"}
               alt={articulo.titulo}
@@ -29,7 +29,7 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
             />
           </div>
         )}
-        <CardHeader className="space-y-3">
+        <CardHeader className="flex-1 space-y-3">
           {articulo.articuloCategorias.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {articulo.articuloCategorias.slice(0, 2).map(({ categoria }) => (
@@ -43,13 +43,13 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
               ))}
             </div>
           )}
-          <h3 className="line-clamp-2 text-balance font-serif text-2xl font-bold leading-tight tracking-tight transition-colors group-hover:text-primary">
+          <h3 className="line-clamp-2 min-h-[3.5rem] text-balance font-serif text-2xl font-bold leading-tight tracking-tight transition-colors group-hover:text-primary">
             {articulo.titulo}
           </h3>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-4">
           {articulo.descripcion && (
-            <p className="line-clamp-3 text-pretty font-sans text-base leading-relaxed text-muted-foreground">
+            <p className="line-clamp-3 min-h-[4.5rem] text-pretty font-sans text-base leading-relaxed text-muted-foreground">
               {articulo.descripcion}
             </p>
           )}

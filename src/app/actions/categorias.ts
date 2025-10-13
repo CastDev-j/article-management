@@ -101,6 +101,33 @@ export async function getCategorias() {
   });
 }
 
+export async function getCategoriasWithPagination({
+  page = 1,
+  pageSize = 12,
+}: {
+  page?: number;
+  pageSize?: number;
+}) {
+  const skip = (page - 1) * pageSize;
+
+  const categorias = await prisma.categoria.findMany({
+    orderBy: {
+      nombre: "asc",
+    },
+  });
+
+  const total = categorias.length;
+  const paginatedCategorias = categorias.slice(skip, skip + pageSize);
+  const totalPages = Math.ceil(total / pageSize);
+
+  return {
+    categorias: paginatedCategorias,
+    totalPages,
+    currentPage: page,
+    total,
+  };
+}
+
 export async function getCategoriaBySlug(slug: string) {
   return prisma.categoria.findUnique({
     where: { slug },

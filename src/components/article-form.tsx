@@ -62,6 +62,7 @@ export function ArticleForm({ articulo, categorias }: ArticleFormProps) {
       }
     } catch (error) {
       alert("Error al guardar el artículo");
+    } finally {
       setLoading(false);
     }
   }

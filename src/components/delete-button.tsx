@@ -18,6 +18,7 @@ export function DeleteButton({ articuloId }: { articuloId: string }) {
       await deleteArticulo(articuloId);
     } catch (error) {
       alert("Error al eliminar el artículo");
+    } finally {
       setLoading(false);
     }
   }
