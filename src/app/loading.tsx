@@ -33,7 +33,7 @@ export default function Loading() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 pb-12">
+        <section className="container mx-auto px-4 py-12">
           <div className="mb-8 flex items-center justify-between">
             <Skeleton className="h-10 w-64" />
             <Skeleton className="h-10 w-32" />
