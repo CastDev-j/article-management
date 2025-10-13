@@ -26,7 +26,6 @@ export function PublicHeader() {
             className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
           >
             Todos los artículos
-            <Search className="h-4 w-4" />
           </Link>
         </div>
 
