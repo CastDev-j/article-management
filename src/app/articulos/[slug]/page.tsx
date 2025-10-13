@@ -88,18 +88,33 @@ export default async function ArticuloPage({
             </p>
           )}
 
-          <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border pb-6 font-sans text-sm uppercase tracking-wide text-muted-foreground">
-            <div className="flex items-center gap-2">
+          <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border pb-6 font-sans text-sm">
+            <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
               <span className="font-semibold text-foreground">Por</span>
               <span>{articulo.autors.join(", ")}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <time dateTime={articulo.createdAt.toISOString()}>
-                {format(new Date(articulo.createdAt), "d 'de' MMMM, yyyy", {
-                  locale: es,
-                })}
-              </time>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                <time
+                  dateTime={articulo.createdAt.toISOString()}
+                  className="font-medium"
+                >
+                  {format(new Date(articulo.createdAt), "d 'de' MMMM, yyyy", {
+                    locale: es,
+                  })}
+                </time>
+              </div>
+              {articulo.updatedAt &&
+                new Date(articulo.updatedAt).getTime() !==
+                  new Date(articulo.createdAt).getTime() && (
+                  <span className="pl-6 text-[11px] italic text-muted-foreground/70">
+                    Última actualización:{" "}
+                    {format(new Date(articulo.updatedAt), "d 'de' MMMM, yyyy", {
+                      locale: es,
+                    })}
+                  </span>
+                )}
             </div>
           </div>
 

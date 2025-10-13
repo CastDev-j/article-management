@@ -18,7 +18,7 @@ interface ArticleCardProps {
 export function ArticleCard({ articulo }: ArticleCardProps) {
   return (
     <Link href={`/articulos/${articulo.slug}`} className="group">
-      <Card className="flex h-full flex-col overflow-hidden border-2 transition-all hover:border-foreground hover:shadow-xl">
+      <Card className="flex h-full flex-col overflow-hidden border-2 pt-0 transition-all hover:border-foreground hover:shadow-xl">
         {articulo.imagen && (
           <div className="relative aspect-[16/9] w-full overflow-hidden border-b-2">
             <Image
@@ -55,13 +55,32 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
           )}
         </CardContent>
         <CardFooter className="border-t pt-4">
-          <div className="flex w-full items-center justify-between font-sans text-xs uppercase tracking-wide text-muted-foreground">
-            <span className="font-semibold">{articulo.autors.join(", ")}</span>
-            <time dateTime={articulo.createdAt.toISOString()}>
-              {format(new Date(articulo.createdAt), "d MMM yyyy", {
-                locale: es,
-              })}
-            </time>
+          <div className="flex w-full flex-col gap-2 font-sans text-xs">
+            <div className="flex items-center justify-between tracking-wide text-muted-foreground">
+              <span className="font-semibold uppercase">
+                {articulo.autors.join(", ")}
+              </span>
+              <time
+                dateTime={articulo.createdAt.toISOString()}
+                className="font-medium uppercase"
+              >
+                {format(new Date(articulo.createdAt), "d MMM yyyy", {
+                  locale: es,
+                })}
+              </time>
+            </div>
+            {articulo.updatedAt &&
+              new Date(articulo.updatedAt).getTime() !==
+                new Date(articulo.createdAt).getTime() && (
+                <div className="flex justify-end">
+                  <span className="text-[10px] italic text-muted-foreground/70">
+                    Actualizado:{" "}
+                    {format(new Date(articulo.updatedAt), "d MMM yyyy", {
+                      locale: es,
+                    })}
+                  </span>
+                </div>
+              )}
           </div>
         </CardFooter>
       </Card>
