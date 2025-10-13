@@ -155,36 +155,36 @@ export default async function ArticuloPage({
             </figure>
           )}
 
-          <div className="article-content mx-auto max-w-none">
+          <div className="article-content mx-auto max-w-none overflow-hidden break-words">
             <ReactMarkdown
               components={{
                 h1: ({ node, ...props }) => (
                   <h1
-                    className="mb-4 md:mb-6 mt-8 md:mt-10 font-serif text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight"
+                    className="mb-4 md:mb-6 mt-8 md:mt-10 font-serif text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight break-words"
                     {...props}
                   />
                 ),
                 h2: ({ node, ...props }) => (
                   <h2
-                    className="mb-3 md:mb-4 mt-6 md:mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-tight"
+                    className="mb-3 md:mb-4 mt-6 md:mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-tight break-words"
                     {...props}
                   />
                 ),
                 h3: ({ node, ...props }) => (
                   <h3
-                    className="mb-2 md:mb-3 mt-5 md:mt-6 font-serif text-lg md:text-xl lg:text-2xl font-bold tracking-tight"
+                    className="mb-2 md:mb-3 mt-5 md:mt-6 font-serif text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-words"
                     {...props}
                   />
                 ),
                 h4: ({ node, ...props }) => (
                   <h4
-                    className="mb-2 mt-4 font-serif text-base md:text-lg lg:text-xl font-bold tracking-tight"
+                    className="mb-2 mt-4 font-serif text-base md:text-lg lg:text-xl font-bold tracking-tight break-words"
                     {...props}
                   />
                 ),
                 p: ({ node, ...props }) => (
                   <p
-                    className="mb-4 md:mb-6 text-base md:text-[18px] leading-[1.65] md:leading-[1.75] tracking-wide text-foreground/95"
+                    className="mb-4 md:mb-6 text-base md:text-[18px] leading-[1.65] md:leading-[1.75] tracking-wide text-foreground/95 break-words"
                     style={{
                       fontFamily:
                         'Georgia, Cambria, "Times New Roman", Times, serif',
@@ -194,43 +194,51 @@ export default async function ArticuloPage({
                 ),
                 a: ({ node, ...props }) => (
                   <a
-                    className="font-semibold text-foreground underline decoration-foreground/30 decoration-2 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary"
+                    className="font-semibold text-foreground underline decoration-foreground/30 decoration-2 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary break-words"
                     {...props}
                   />
                 ),
                 blockquote: ({ node, ...props }) => (
                   <blockquote
-                    className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 font-serif italic text-[17px] leading-[1.7] text-foreground/80"
+                    className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 pr-4 font-serif italic text-[17px] leading-[1.7] text-foreground/80 break-words overflow-hidden"
                     {...props}
                   />
                 ),
                 strong: ({ node, ...props }) => (
                   <strong
-                    className="font-semibold text-foreground"
+                    className="font-semibold text-foreground break-words"
                     {...props}
                   />
                 ),
                 code: ({ node, inline, ...props }: any) =>
                   inline ? (
                     <code
-                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-[15px] text-foreground"
+                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-[15px] text-foreground break-words"
                       {...props}
                     />
                   ) : (
-                    <code
-                      className="block rounded border-2 border-border bg-muted/30 p-4 font-mono text-sm leading-relaxed"
-                      {...props}
-                    />
+                    <pre className="block rounded border-2 border-border bg-muted/30 p-4 overflow-x-auto max-w-full">
+                      <code
+                        className="font-mono text-sm leading-relaxed whitespace-pre"
+                        {...props}
+                      />
+                    </pre>
                   ),
                 ul: ({ node, ...props }) => (
-                  <ul className="my-5 list-disc space-y-3 pl-8" {...props} />
+                  <ul
+                    className="my-5 list-disc space-y-3 pl-8 break-words"
+                    {...props}
+                  />
                 ),
                 ol: ({ node, ...props }) => (
-                  <ol className="my-5 list-decimal space-y-3 pl-8" {...props} />
+                  <ol
+                    className="my-5 list-decimal space-y-3 pl-8 break-words"
+                    {...props}
+                  />
                 ),
                 li: ({ node, ...props }) => (
                   <li
-                    className="text-[18px] leading-[1.75] text-foreground/95"
+                    className="text-[18px] leading-[1.75] text-foreground/95 break-words"
                     style={{
                       fontFamily:
                         'Georgia, Cambria, "Times New Roman", Times, serif',
@@ -245,14 +253,14 @@ export default async function ArticuloPage({
                   />
                 ),
                 img: ({ node, ...props }) => (
-                  <span className="my-8 block">
+                  <span className="my-8 block max-w-full">
                     <img
                       {...props}
-                      className="w-full rounded-lg border-2 border-border"
+                      className="w-full max-w-full h-auto rounded-lg border-2 border-border"
                       loading="lazy"
                     />
                     {props.alt && (
-                      <span className="mt-2 block text-center font-sans text-sm italic text-muted-foreground">
+                      <span className="mt-2 block text-center font-sans text-sm italic text-muted-foreground break-words">
                         {props.alt}
                       </span>
                     )}

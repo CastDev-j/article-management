@@ -4,35 +4,25 @@ import { ArrowRight } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16">
       <div className="mx-auto max-w-3xl text-center min-h-[70vh] flex flex-col justify-center">
-        <Skeleton className="mb-4 md:mb-6 h-12 md:h-16 w-full max-w-2xl mx-auto" />
-        <Skeleton className="mb-2 md:mb-4 h-12 md:h-14 w-3/4 mx-auto" />
+        <h1 className="mb-6 text-balance text-5xl font-bold leading-tight lg:text-6xl">
+          Sistema de Gestión de Artículos
+        </h1>
+        <p className="mb-8 text-pretty text-xl leading-relaxed text-muted-foreground">
+          Crea, organiza y publica artículos con un sistema completo de
+          categorías y búsqueda.
+        </p>
 
-        <div className="mb-6 md:mb-8 flex justify-center">
-          <Skeleton className="h-6 md:h-8 w-full max-w-xl" />
+        <div className="mb-8 flex justify-center gap-8 text-sm">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-5 w-28" />
+          <Skeleton className="h-5 w-24" />
         </div>
 
-        {/* Estadísticas discretas */}
-        <div className="mb-6 md:mb-8 flex flex-wrap justify-center gap-4 md:gap-8">
-          <Skeleton className="h-5 md:h-6 w-24 md:w-32" />
-          <Skeleton className="h-5 md:h-6 w-28 md:w-36" />
-          <Skeleton className="h-5 md:h-6 w-24 md:w-32" />
-        </div>
-
-        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 md:gap-4">
-          <Button size="lg" disabled className="gap-2 w-full sm:w-auto">
-            Gestionar Artículos
-            <ArrowRight className="h-5 w-5" />
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            disabled
-            className="w-full sm:w-auto"
-          >
-            Gestionar Categorías
-          </Button>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Skeleton className="h-11 w-48" />
+          <Skeleton className="h-11 w-44" />
         </div>
       </div>
     </div>

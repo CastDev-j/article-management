@@ -1,14 +1,16 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PublicHeader } from "@/components/public-header";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Loading() {
   return (
     <>
       <PublicHeader />
       <main>
-        <section className="container mx-auto px-4 sm:py-0 py-8">
+        <section className="container mx-auto px-4 py-6">
           <div className="relative overflow-hidden rounded-xl bg-muted">
-            <Skeleton className="h-[300px] md:h-[400px] lg:h-[500px] w-full" />
+            <Skeleton className="h-[400px] md:h-[500px] lg:h-[600px] w-full" />
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-full max-w-2xl px-4 md:px-8 space-y-2 md:space-y-4">
@@ -28,8 +30,22 @@ export default function Loading() {
               ))}
             </div>
 
-            <Skeleton className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10 rounded-full" />
-            <Skeleton className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10 rounded-full" />
+            <Button
+              variant="outline"
+              size="icon"
+              disabled
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10"
+            >
+              <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 h-8 w-8 md:h-10 md:w-10"
+            >
+              <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
           </div>
         </section>
 
@@ -43,7 +59,7 @@ export default function Loading() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="group overflow-hidden rounded-lg border-2 bg-card transition-all hover:shadow-lg flex flex-col"
+                className="group overflow-hidden rounded-lg border-2 bg-card transition-all flex flex-col"
               >
                 <Skeleton className="aspect-[16/9] w-full border-b-2" />
                 <div className="p-4 md:p-6 flex-1 flex flex-col">

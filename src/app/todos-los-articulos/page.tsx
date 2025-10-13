@@ -54,8 +54,10 @@ export default async function TodosLosArticulosPage({
 
   if (categoriasSlugs.length > 0) {
     articulosFiltrados = articulosFiltrados.filter((articulo: any) =>
-      articulo.articuloCategorias?.some((ac: any) =>
-        categoriasSlugs.includes(ac.categoria.slug)
+      categoriasSlugs.every((slug: string) =>
+        articulo.articuloCategorias?.some(
+          (ac: any) => ac.categoria.slug === slug
+        )
       )
     );
   }
