@@ -65,16 +65,35 @@ export default async function AdminArticulosPage({
       </div>
 
       {articles.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="mb-4 text-muted-foreground">
-              Aún no has creado ningún artículo.
-            </p>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border bg-muted/30 px-4 py-12 text-center">
+          <div className="mb-6 rounded-full bg-muted p-6">
+            <Plus className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <h3 className="mb-2 text-xl font-semibold">
+            {total === 0
+              ? "No hay artículos creados"
+              : "No se encontraron artículos en esta página"}
+          </h3>
+          <p className="mb-6 max-w-md text-pretty text-muted-foreground">
+            {total === 0
+              ? "Comienza a escribir tu primer artículo y compártelo con el mundo."
+              : currentPage > 1
+              ? "Esta página no tiene artículos. Intenta volver a la primera página."
+              : "No se encontraron resultados."}
+          </p>
+          {total === 0 ? (
             <Link href="/admin/articulos/nuevo">
-              <Button>Crear tu primer artículo</Button>
+              <Button size="lg">
+                <Plus className="mr-2 h-4 w-4" />
+                Crear primer artículo
+              </Button>
             </Link>
-          </CardContent>
-        </Card>
+          ) : (
+            <Link href="/admin/articulos">
+              <Button size="lg">Volver a la primera página</Button>
+            </Link>
+          )}
+        </div>
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -5,8 +5,7 @@ export const IMAGEKIT_CONFIG = {
   publicKey:
     process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
     "public_uYRJXjLiPIz3z0dICFHuFLmSh2A=",
-  privateKey:
-    process.env.IMAGEKIT_PRIVATE_KEY || "private_G8y47KFr1iE4uldf6uOqkQ+NcAs=",
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 };
 
 export async function uploadImageToImageKit(file: File): Promise<string> {

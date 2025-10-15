@@ -274,15 +274,31 @@ export default async function TodosLosArticulosPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 md:py-12">
-            <p className="text-lg md:text-xl text-muted-foreground mb-2">
-              No se encontraron artículos.
+          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border bg-muted/30 px-4 py-12 text-center">
+            <div className="mb-6 rounded-full bg-muted p-6">
+              <Search className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h3 className="mb-2 text-xl font-semibold">
+              No se encontraron artículos
+            </h3>
+            <p className="mb-6 max-w-md text-pretty text-muted-foreground">
+              {searchQuery || categorySlugs.length > 0
+                ? "No hay artículos que coincidan con tu búsqueda. Intenta con otros términos o elimina los filtros."
+                : currentPage > 1
+                ? "Esta página no tiene artículos. Intenta volver a la primera página."
+                : "Aún no hay artículos publicados."}
             </p>
             {(searchQuery || categorySlugs.length > 0) && (
               <Link href="/todos-los-articulos">
-                <Button variant="outline" className="mt-4">
-                  Ver todos los artículos
+                <Button size="lg">
+                  <X className="mr-2 h-4 w-4" />
+                  Limpiar filtros
                 </Button>
+              </Link>
+            )}
+            {currentPage > 1 && !searchQuery && categorySlugs.length === 0 && (
+              <Link href="/todos-los-articulos">
+                <Button size="lg">Volver a la primera página</Button>
               </Link>
             )}
           </div>

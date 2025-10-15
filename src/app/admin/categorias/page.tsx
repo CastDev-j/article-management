@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { getCategoriesWithPagination } from "@/app/actions/categorias";
 import { Plus, Pencil } from "lucide-react";
@@ -17,6 +18,7 @@ import { prisma } from "@/lib/db";
 import { checkIsAdmin } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
 import { PaginationWrapper } from "@/components/pagination-wrapper";
+import { CategoryDialog } from "@/components/category-dialog";
 
 export const metadata: Metadata = {
   title: "Gestión de Categorías | Admin",
@@ -68,61 +70,88 @@ export default async function AdminCategoriasPage({
             {total} categorías en total
           </p>
         </div>
-        <Link href="/admin/categorias/nueva">
+        <CategoryDialog>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Nueva Categoría
           </Button>
-        </Link>
+        </CategoryDialog>
       </div>
 
       {categoriesWithCount.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="mb-4 text-muted-foreground">
-              No hay categorías creadas.
-            </p>
-            <Link href="/admin/categorias/nueva">
-              <Button>Crear primera categoría</Button>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border bg-muted/30 px-4 py-12 text-center">
+          <div className="mb-6 rounded-full bg-muted p-6">
+            <Plus className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <h3 className="mb-2 text-xl font-semibold">
+            {total === 0
+              ? "No hay categorías creadas"
+              : "No se encontraron categorías en esta página"}
+          </h3>
+          <p className="mb-6 max-w-md text-pretty text-muted-foreground">
+            {total === 0
+              ? "Comienza creando tu primera categoría para organizar tus artículos."
+              : currentPage > 1
+              ? "Esta página no tiene categorías. Intenta volver a la primera página."
+              : "No se encontraron resultados."}
+          </p>
+          {total === 0 ? (
+            <CategoryDialog>
+              <Button size="lg">
+                <Plus className="mr-2 h-4 w-4" />
+                Crear primera categoría
+              </Button>
+            </CategoryDialog>
+          ) : (
+            <Link href="/admin/categorias">
+              <Button size="lg">Volver a la primera página</Button>
             </Link>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categoriesWithCount.map((category) => (
-              <Card key={category.id}>
-                <CardHeader>
-                  <CardTitle className="font-serif text-xl">
-                    {category.nombre}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="secondary">
-                    {category.articleCount} artículos
-                  </Badge>
-                </CardContent>
-                <CardFooter className="flex gap-2">
-                  <Link
-                    href={`/admin/categorias/${category.id}/editar`}
-                    className="flex-1"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full bg-transparent"
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Editar
-                    </Button>
-                  </Link>
-                  <DeleteCategoryButton
-                    categoryId={category.id}
-                    disabled={category.articleCount > 0}
-                  />
-                </CardFooter>
-              </Card>
-            ))}
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead className="w-[180px] text-right">
+                    Artículos
+                  </TableHead>
+                  <TableHead className="w-[240px] text-right">
+                    Acciones
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categoriesWithCount.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell className="font-medium max-w-[140px] sm:max-w-md truncate">
+                      {category.nombre}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="secondary">
+                        {category.articleCount} artículos
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <CategoryDialog category={category}>
+                          <Button variant="outline" size="sm">
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Editar
+                          </Button>
+                        </CategoryDialog>
+                        <DeleteCategoryButton
+                          categoryId={category.id}
+                          disabled={category.articleCount > 0}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
           <PaginationWrapper
             currentPage={currentPage}
