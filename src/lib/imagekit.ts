@@ -1,7 +1,12 @@
 export const IMAGEKIT_CONFIG = {
-  urlEndpoint: "https://ik.imagekit.io/pcddcn6rq/",
-  publicKey: "public_uYRJXjLiPIz3z0dICFHuFLmSh2A=",
-  privateKey: "private_G8y47KFr1iE4uldf6uOqkQ+NcAs=",
+  urlEndpoint:
+    process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT ||
+    "https://ik.imagekit.io/pcddcn6rq/",
+  publicKey:
+    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
+    "public_uYRJXjLiPIz3z0dICFHuFLmSh2A=",
+  privateKey:
+    process.env.IMAGEKIT_PRIVATE_KEY || "private_G8y47KFr1iE4uldf6uOqkQ+NcAs=",
 };
 
 export async function uploadImageToImageKit(file: File): Promise<string> {
