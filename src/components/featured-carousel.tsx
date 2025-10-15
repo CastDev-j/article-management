@@ -64,16 +64,14 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                   <CardContent className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 text-white">
                     {article.articuloCategorias &&
                       article.articuloCategorias.length > 0 && (
-                        <Link
-                          href={`/todos-los-articulos?categorias=${article.articuloCategorias[0].categoria.slug}`}
-                        >
+                        <div>
                           <Badge
                             variant="secondary"
                             className="mb-2 md:mb-3 bg-primary/90 hover:bg-primary text-white cursor-pointer transition-colors text-xs md:text-sm"
                           >
                             {article.articuloCategorias[0].categoria.nombre}
                           </Badge>
-                        </Link>
+                        </div>
                       )}
                     <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold mb-2 md:mb-3 line-clamp-2">
                       {article.titulo}
