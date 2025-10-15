@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getArticleBySlug } from "@/app/actions/articulos";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import { PublicHeader } from "@/components/public-header";
+import { auth } from "@clerk/nextjs/server";
+import { checkIsAdmin } from "@/app/actions/auth";
 
 export async function generateMetadata({
   params,
@@ -66,16 +68,29 @@ export default async function ArticuloPage({
     notFound();
   }
 
+  const { userId } = await auth();
+  const isAdmin = userId ? await checkIsAdmin(userId) : false;
+
   return (
     <>
       <PublicHeader />
       <main className="container mx-auto px-4 pt-4 pb-8 md:pb-12">
-        <Link href="/todos-los-articulos">
-          <Button variant="ghost" className="mb-6 md:mb-8 font-sans text-sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a artículos
-          </Button>
-        </Link>
+        <div className="mb-6 md:mb-8 flex items-center justify-between">
+          <Link href="/todos-los-articulos">
+            <Button variant="ghost" className="font-sans text-sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver a artículos
+            </Button>
+          </Link>
+          {isAdmin && (
+            <Link href={`/admin/articulos/${article.id}/editar`}>
+              <Button variant="outline" size="sm">
+                <Settings className="mr-2 h-4 w-4" />
+                Editar artículo
+              </Button>
+            </Link>
+          )}
+        </div>
 
         <article className="mx-auto max-w-4xl">
           <h1 className="mb-3 md:mb-4 text-balance font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
