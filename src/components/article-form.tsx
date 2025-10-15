@@ -13,9 +13,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createArticle, updateArticle } from "@/app/actions/articulos";
 import type { Articulo, Categoria } from "@/lib/types";
-import { Loader2, Plus, X, Eye, Edit } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  X,
+  Eye,
+  Edit,
+  Upload,
+  Image as ImageIcon,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
+import { uploadImageToImageKit } from "@/lib/imagekit";
+import { MarkdownEditor } from "./markdown-editor";
 
 interface ArticleFormProps {
   article?: Articulo;
@@ -25,6 +35,7 @@ interface ArticleFormProps {
 export function ArticleForm({ article, categories }: ArticleFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     article?.articuloCategorias.map((ac) => ac.categoria.id) || []
   );
@@ -87,6 +98,27 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     setAutors((prev) => prev.map((a, i) => (i === index ? value : a)));
   }
 
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Por favor, selecciona un archivo de imagen válido");
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const imageUrl = await uploadImageToImageKit(file);
+      setImagen(imageUrl);
+    } catch (error) {
+      console.error("Error al subir imagen:", error);
+      alert("Error al subir la imagen. Por favor, intenta de nuevo.");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Tabs defaultValue="edit" className="w-full">
@@ -121,20 +153,52 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="imagen">URL de Imagen</Label>
-                  <Input
-                    id="imagen"
-                    name="imagen"
-                    type="url"
-                    value={imagen}
-                    onChange={(e) => setImagen(e.target.value)}
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                  />
-                  {imagen && (
-                    <p className="text-xs text-muted-foreground">
-                      ✓ Imagen configurada
-                    </p>
-                  )}
+                  <Label htmlFor="imagen">Imagen del Artículo</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="imagen"
+                        name="imagen"
+                        type="url"
+                        value={imagen}
+                        onChange={(e) => setImagen(e.target.value)}
+                        placeholder="https://ejemplo.com/imagen.jpg"
+                        className="pr-10"
+                      />
+                      {imagen && (
+                        <ImageIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-600" />
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id="image-upload"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage || loading}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          document.getElementById("image-upload")?.click()
+                        }
+                        disabled={uploadingImage || loading}
+                        title="Subir imagen"
+                      >
+                        {uploadingImage ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Ingresa una URL o sube una imagen desde tu dispositivo
+                  </p>
                 </div>
               </div>
 
@@ -168,7 +232,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                   {autors.map((autor, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-1 rounded-md border border-input bg-background px-3 py-2"
+                      className="flex items-center gap-1 rounded-md border border-input bg-muted/50 px-3 py-2 shadow-sm"
                     >
                       <input
                         type="text"
@@ -183,21 +247,23 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                         }}
                         className="h-auto border-0 bg-transparent p-0 text-sm outline-none transition-all placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                       />
-                      {autors.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => removeAutor(index)}
-                          disabled={loading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => removeAutor(index)}
+                        disabled={loading}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
                   ))}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Puedes editar los autores haciendo clic directamente en el
+                  texto
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -207,19 +273,16 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
               <CardTitle>Contenido (Markdown)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Textarea
-                id="contenido"
-                name="contenido"
+              <MarkdownEditor
                 value={contenido}
-                onChange={(e) => setContenido(e.target.value)}
-                required
+                onChange={setContenido}
                 placeholder="Escribe el contenido del artículo usando Markdown..."
                 rows={20}
-                className="font-mono text-sm"
+                name="contenido"
               />
               <p className="text-xs text-muted-foreground">
-                Usa Markdown para formatear: **negrita**, *cursiva*, # títulos,
-                listas, enlaces, imágenes, etc.
+                Usa la barra de herramientas para formatear el contenido o
+                escribe directamente en Markdown
               </p>
             </CardContent>
           </Card>
