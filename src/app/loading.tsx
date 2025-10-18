@@ -8,7 +8,7 @@ export default function Loading() {
     <>
       <PublicHeader />
       <main>
-        <section className="container mx-auto px-4 py-6">
+        <section className="container mx-auto">
           <div className="relative overflow-hidden bg-muted">
             <Skeleton className="h-[400px] md:h-[500px] lg:h-[600px] w-full rounded-none" />
 

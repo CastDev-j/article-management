@@ -36,9 +36,9 @@ export default async function HomePage() {
   return (
     <>
       <PublicHeader />
-      <main>
+      <main className="flex-grow">
         {featured.length > 0 && (
-          <section className="container mx-auto px-4">
+          <section className="container mx-auto">
             <FeaturedCarousel articles={featured} />
           </section>
         )}

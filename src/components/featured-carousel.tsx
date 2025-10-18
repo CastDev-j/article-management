@@ -45,7 +45,7 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
         {articles.map((article) => (
           <CarouselItem key={article.id}>
             <Link href={`/articulos/${article.slug}`}>
-              <Card className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300 py-0 my-6 rounded-none">
+              <Card className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300 py-0 rounded-none">
                 <div className="relative h-[400px] md:h-[500px] lg:h-[600px]">
                   {article.imagen ? (
                     <img
@@ -73,7 +73,7 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                           </Badge>
                         </div>
                       )}
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold mb-2 md:mb-3 line-clamp-2">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold mb-2 md:mb-3 line-clamp-2 leading-tight">
                       {article.titulo}
                     </h2>
                     {article.descripcion && (
