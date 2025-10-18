@@ -31,7 +31,6 @@ export async function AdminHeader() {
             href="/"
             className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1"
           >
-            <Home className="h-4 w-4" />
             Ver sitio
           </Link>
           {isAdmin && (
@@ -46,14 +45,12 @@ export async function AdminHeader() {
                 href="/admin/articulos"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
-                <PenSquare className="mr-1 inline h-4 w-4" />
                 Artículos
               </Link>
               <Link
                 href="/admin/categorias"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
-                <FolderOpen className="mr-1 inline h-4 w-4" />
                 Categorías
               </Link>
             </>
@@ -88,7 +85,6 @@ export async function AdminHeader() {
                     href="/"
                     className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                   >
-                    <Home className="h-4 w-4" />
                     Ver sitio
                   </Link>
                   {isAdmin && (
@@ -103,14 +99,12 @@ export async function AdminHeader() {
                         href="/admin/articulos"
                         className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                       >
-                        <PenSquare className="h-4 w-4" />
                         Artículos
                       </Link>
                       <Link
                         href="/admin/categorias"
                         className="flex items-center gap-3 text-base font-medium transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
                       >
-                        <FolderOpen className="h-4 w-4" />
                         Categorías
                       </Link>
                     </>
