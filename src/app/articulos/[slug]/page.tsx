@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getArticleBySlug } from "@/app/actions/articulos";
 import { ArrowLeft, Calendar, Settings } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ShareButton = dynamic(() => import("@/components/share-button"), {
+  ssr: false,
+});
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Metadata } from "next";
@@ -82,20 +87,32 @@ export default async function ArticuloPage({
               Volver a artículos
             </Button>
           </Link>
-          {isAdmin && (
-            <Link href={`/admin/articulos/${article.id}/editar`}>
-              <Button variant="outline" size="sm">
-                <Settings className="mr-2 h-4 w-4" />
-                Editar artículo
-              </Button>
-            </Link>
-          )}
+
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link href={`/admin/articulos/${article.id}/editar`}>
+                <Button variant="outline" size="sm">
+                  <Settings className="mr-0 sm:mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Editar artículo</span>
+                </Button>
+              </Link>
+            )}
+
+            <ShareButton
+              title={article.titulo}
+              url={`${process.env.NEXT_PUBLIC_SITE_URL || ""}/articulos/${
+                article.slug
+              }`}
+            />
+          </div>
         </div>
 
         <article className="mx-auto max-w-4xl">
-          <h1 className="mb-3 md:mb-4 text-balance font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-            {article.titulo}
-          </h1>
+          <div className="mb-3 md:mb-4 relative">
+            <h1 className="text-balance font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight pr-12 md:pr-16">
+              {article.titulo}
+            </h1>
+          </div>
 
           {article.descripcion && (
             <p className="mb-6 md:mb-8 border-b border-t border-border py-4 md:py-6 text-pretty font-serif text-lg md:text-xl lg:text-2xl leading-relaxed text-foreground/90">
