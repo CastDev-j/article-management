@@ -117,6 +117,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     } finally {
       setUploadingImage(false);
     }
+    e.target.value = "";
   }
 
   return (
