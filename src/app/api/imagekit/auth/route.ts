@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-
-// Usar la private key disponible únicamente en el servidor. No la importamos
-// desde el cliente ni desde archivos compartidos para evitar fugas.
 const PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY;
 
 export async function GET() {
   if (!PRIVATE_KEY) {
-    // En producción esto debería estar configurado; devolvemos un error claro.
     return NextResponse.json(
       { error: "IMAGEKIT_PRIVATE_KEY no configurada en el servidor" },
       { status: 500 }
