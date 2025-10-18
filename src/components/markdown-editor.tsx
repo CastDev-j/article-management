@@ -36,10 +36,9 @@ import {
   Loader2,
   Upload,
 } from "lucide-react";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Copy, Scissors, Clipboard } from "lucide-react";
 import { uploadImageToImageKit } from "@/lib/imagekit";
-
 interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -59,8 +58,19 @@ export function MarkdownEditor({
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [imageAltText, setImageAltText] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  useEffect(() => {
+    // Detect touch devices: navigator.maxTouchPoints covers most modern devices;
+    // fall back to ontouchstart check for older WebKit browsers.
+    const isTouch =
+      typeof navigator !== "undefined" &&
+      (navigator.maxTouchPoints > 0 ||
+        (window as any).ontouchstart !== undefined);
+    setIsTouchDevice(!!isTouch);
+  }, []);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
