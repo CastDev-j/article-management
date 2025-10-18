@@ -13,9 +13,9 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   formData.append("fileName", file.name);
   formData.append("publicKey", IMAGEKIT_CONFIG.publicKey);
 
-  // Request a fresh signature/token from the server and avoid any intermediate
-  // caching to prevent re-using tokens (which ImageKit rejects).
-  const authResponse = await fetch("/api/imagekit/auth", { cache: "no-store" });
+  const authResponse = await fetch(`/api/imagekit/auth?t=${Date.now()}`, {
+    cache: "no-store",
+  });
 
   if (!authResponse.ok) {
     const text = await authResponse.text().catch(() => "");
@@ -33,6 +33,13 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   formData.append("signature", authData.signature);
   formData.append("expire", authData.expire);
   formData.append("token", authData.token);
+
+  try {
+    console.log(
+      "[imagekit] using token:",
+      authData.token?.toString?.()?.slice?.(0, 12)
+    );
+  } catch (e) {}
 
   const response = await fetch(
     "https://upload.imagekit.io/api/v1/files/upload",
