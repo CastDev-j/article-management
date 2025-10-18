@@ -37,6 +37,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useRef, useState, useCallback } from "react";
+import { Copy, Scissors, Clipboard } from "lucide-react";
 import { uploadImageToImageKit } from "@/lib/imagekit";
 
 interface MarkdownEditorProps {
@@ -367,9 +368,18 @@ export function MarkdownEditor({
         </ContextMenuTrigger>
         <ContextMenuContent className="w-56">
           {/* Clipboard actions */}
-          <ContextMenuItem onClick={copySelection}>Copiar</ContextMenuItem>
-          <ContextMenuItem onClick={cutSelection}>Cortar</ContextMenuItem>
-          <ContextMenuItem onClick={pasteAtCursor}>Pegar</ContextMenuItem>
+          <ContextMenuItem onClick={copySelection}>
+            <Copy className="mr-2 h-4 w-4" />
+            Copiar
+          </ContextMenuItem>
+          <ContextMenuItem onClick={cutSelection}>
+            <Scissors className="mr-2 h-4 w-4" />
+            Cortar
+          </ContextMenuItem>
+          <ContextMenuItem onClick={pasteAtCursor}>
+            <Clipboard className="mr-2 h-4 w-4" />
+            Pegar
+          </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuSub>
             <ContextMenuSubTrigger>Encabezados</ContextMenuSubTrigger>
