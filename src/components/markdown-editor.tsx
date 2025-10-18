@@ -36,7 +36,7 @@ import {
   Loader2,
   Upload,
 } from "lucide-react";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Copy, Scissors, Clipboard } from "lucide-react";
 import { uploadImageToImageKit } from "@/lib/imagekit";
 
@@ -61,6 +61,18 @@ export function MarkdownEditor({
   const [imageUrl, setImageUrl] = useState("");
   const [imageAltText, setImageAltText] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
@@ -351,7 +363,7 @@ export function MarkdownEditor({
         })}
       </div>
       <ContextMenu>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger disabled={isMobile}>
           <Textarea
             ref={textareaRef}
             value={value}
@@ -366,75 +378,77 @@ export function MarkdownEditor({
             }}
           />
         </ContextMenuTrigger>
-        <ContextMenuContent className="w-56">
-          {/* Clipboard actions */}
-          <ContextMenuItem onClick={copySelection}>
-            <Copy className="mr-2 h-4 w-4" />
-            Copiar
-          </ContextMenuItem>
-          <ContextMenuItem onClick={cutSelection}>
-            <Scissors className="mr-2 h-4 w-4" />
-            Cortar
-          </ContextMenuItem>
-          <ContextMenuItem onClick={pasteAtCursor}>
-            <Clipboard className="mr-2 h-4 w-4" />
-            Pegar
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuSub>
-            <ContextMenuSubTrigger>Encabezados</ContextMenuSubTrigger>
-            <ContextMenuSubContent className="w-44">
-              <ContextMenuItem onClick={toolbarButtons[0].action}>
-                <Heading1 className="mr-2 h-4 w-4" />
-                Título H1
-              </ContextMenuItem>
-              <ContextMenuItem onClick={toolbarButtons[1].action}>
-                <Heading2 className="mr-2 h-4 w-4" />
-                Título H2
-              </ContextMenuItem>
-              <ContextMenuItem onClick={toolbarButtons[2].action}>
-                <Heading3 className="mr-2 h-4 w-4" />
-                Título H3
-              </ContextMenuItem>
-            </ContextMenuSubContent>
-          </ContextMenuSub>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={toolbarButtons[3].action}>
-            <Bold className="mr-2 h-4 w-4" />
-            Negrita
-          </ContextMenuItem>
-          <ContextMenuItem onClick={toolbarButtons[4].action}>
-            <Italic className="mr-2 h-4 w-4" />
-            Cursiva
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={toolbarButtons[5].action}>
-            <Link className="mr-2 h-4 w-4" />
-            Enlace
-          </ContextMenuItem>
-          <ContextMenuItem onClick={toolbarButtons[9].action}>
-            <ImageIcon className="mr-2 h-4 w-4" />
-            Imagen
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={toolbarButtons[6].action}>
-            <List className="mr-2 h-4 w-4" />
-            Lista
-          </ContextMenuItem>
-          <ContextMenuItem onClick={toolbarButtons[7].action}>
-            <ListOrdered className="mr-2 h-4 w-4" />
-            Lista numerada
-          </ContextMenuItem>
-          <ContextMenuItem onClick={toolbarButtons[8].action}>
-            <Quote className="mr-2 h-4 w-4" />
-            Cita
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={toolbarButtons[10].action}>
-            <Minus className="mr-2 h-4 w-4" />
-            Separador
-          </ContextMenuItem>
-        </ContextMenuContent>
+        {!isMobile && (
+          <ContextMenuContent className="w-56">
+            {/* Clipboard actions */}
+            <ContextMenuItem onClick={copySelection}>
+              <Copy className="mr-2 h-4 w-4" />
+              Copiar
+            </ContextMenuItem>
+            <ContextMenuItem onClick={cutSelection}>
+              <Scissors className="mr-2 h-4 w-4" />
+              Cortar
+            </ContextMenuItem>
+            <ContextMenuItem onClick={pasteAtCursor}>
+              <Clipboard className="mr-2 h-4 w-4" />
+              Pegar
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>Encabezados</ContextMenuSubTrigger>
+              <ContextMenuSubContent className="w-44">
+                <ContextMenuItem onClick={toolbarButtons[0].action}>
+                  <Heading1 className="mr-2 h-4 w-4" />
+                  Título H1
+                </ContextMenuItem>
+                <ContextMenuItem onClick={toolbarButtons[1].action}>
+                  <Heading2 className="mr-2 h-4 w-4" />
+                  Título H2
+                </ContextMenuItem>
+                <ContextMenuItem onClick={toolbarButtons[2].action}>
+                  <Heading3 className="mr-2 h-4 w-4" />
+                  Título H3
+                </ContextMenuItem>
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={toolbarButtons[3].action}>
+              <Bold className="mr-2 h-4 w-4" />
+              Negrita
+            </ContextMenuItem>
+            <ContextMenuItem onClick={toolbarButtons[4].action}>
+              <Italic className="mr-2 h-4 w-4" />
+              Cursiva
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={toolbarButtons[5].action}>
+              <Link className="mr-2 h-4 w-4" />
+              Enlace
+            </ContextMenuItem>
+            <ContextMenuItem onClick={toolbarButtons[9].action}>
+              <ImageIcon className="mr-2 h-4 w-4" />
+              Imagen
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={toolbarButtons[6].action}>
+              <List className="mr-2 h-4 w-4" />
+              Lista
+            </ContextMenuItem>
+            <ContextMenuItem onClick={toolbarButtons[7].action}>
+              <ListOrdered className="mr-2 h-4 w-4" />
+              Lista numerada
+            </ContextMenuItem>
+            <ContextMenuItem onClick={toolbarButtons[8].action}>
+              <Quote className="mr-2 h-4 w-4" />
+              Cita
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={toolbarButtons[10].action}>
+              <Minus className="mr-2 h-4 w-4" />
+              Separador
+            </ContextMenuItem>
+          </ContextMenuContent>
+        )}
       </ContextMenu>
 
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
