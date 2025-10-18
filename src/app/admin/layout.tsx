@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminHeader } from "@/components/admin-header";
 
 export const metadata: Metadata = {
-  title: "Panel de Administración | El Periódico",
+  title: "Panel de Administración | Aula de periodismo",
   description: "Gestiona artículos y categorías",
 };
 

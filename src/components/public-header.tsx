@@ -11,7 +11,7 @@ export function PublicHeader() {
           href="/"
           className="font-serif text-xl font-semibold transition-colors hover:text-primary"
         >
-          El Periódico
+          Aula de periodismo
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

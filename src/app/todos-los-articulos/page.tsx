@@ -11,7 +11,7 @@ import Image from "next/image";
 import { CategoryBadge } from "@/components/category-badge";
 
 export const metadata: Metadata = {
-  title: "Todos los Artículos | El Periódico",
+  title: "Todos los Artículos | Aula de periodismo",
   description:
     "Explora todos nuestros artículos. Busca y filtra por categorías.",
 };

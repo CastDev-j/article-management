@@ -189,6 +189,73 @@ export function MarkdownEditor({
     }
   };
 
+  // Clipboard helpers
+  const copySelection = async () => {
+    try {
+      const textarea = textareaRef.current;
+      const start = textarea ? textarea.selectionStart : selection.start;
+      const end = textarea ? textarea.selectionEnd : selection.end;
+      const text = value.substring(start, end);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback: crear textarea temporal
+        const el = document.createElement("textarea");
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+    } catch (err) {
+      console.error("Error copiando al portapapeles", err);
+    }
+  };
+
+  const cutSelection = async () => {
+    try {
+      const textarea = textareaRef.current;
+      const start = textarea ? textarea.selectionStart : selection.start;
+      const end = textarea ? textarea.selectionEnd : selection.end;
+
+      await copySelection();
+      // eliminar selección del textarea
+      const before = value.substring(0, start);
+      const after = value.substring(end);
+      const newValue = before + after;
+      onChange(newValue);
+
+      setTimeout(() => {
+        if (!textarea) return;
+        textarea.focus();
+        textarea.setSelectionRange(start, start);
+        setSelection({ start, end: start });
+      }, 0);
+    } catch (err) {
+      console.error("Error al cortar", err);
+    }
+  };
+
+  const pasteAtCursor = async () => {
+    try {
+      let pasteText = "";
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        pasteText = await navigator.clipboard.readText();
+      } else {
+        // No hay fallback fiable para leer en todos los navegadores sin permisos
+        alert("Tu navegador no soporta lectura del portapapeles desde la web.");
+        return;
+      }
+
+      insertText(pasteText);
+    } catch (err) {
+      console.error("Error al pegar", err);
+      alert(
+        "No se pudo pegar desde el portapapeles. Asegura permisos y vuelve a intentar."
+      );
+    }
+  };
+
   const toolbarButtons = [
     {
       icon: Heading1,
@@ -299,6 +366,11 @@ export function MarkdownEditor({
           />
         </ContextMenuTrigger>
         <ContextMenuContent className="w-56">
+          {/* Clipboard actions */}
+          <ContextMenuItem onClick={copySelection}>Copiar</ContextMenuItem>
+          <ContextMenuItem onClick={cutSelection}>Cortar</ContextMenuItem>
+          <ContextMenuItem onClick={pasteAtCursor}>Pegar</ContextMenuItem>
+          <ContextMenuSeparator />
           <ContextMenuSub>
             <ContextMenuSubTrigger>Encabezados</ContextMenuSubTrigger>
             <ContextMenuSubContent className="w-44">

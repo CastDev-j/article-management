@@ -5,12 +5,12 @@ import { ArticleGrid } from "@/components/article-grid";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "El Periódico | Inicio",
+  title: "Aula de periodismo | Inicio",
   description:
     "Lee los últimos artículos y noticias. Mantente informado con nuestro contenido actualizado.",
   keywords: ["artículos", "noticias", "blog", "información", "actualidad"],
   openGraph: {
-    title: "El Periódico | Inicio",
+    title: "Aula de periodismo | Inicio",
     description:
       "Lee los últimos artículos y noticias. Mantente informado con nuestro contenido actualizado.",
     type: "website",

@@ -5,7 +5,6 @@ export const IMAGEKIT_CONFIG = {
   publicKey:
     process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
     "public_uYRJXjLiPIz3z0dICFHuFLmSh2A=",
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 };
 
 export async function uploadImageToImageKit(file: File): Promise<string> {
@@ -15,6 +14,14 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   formData.append("publicKey", IMAGEKIT_CONFIG.publicKey);
 
   const authResponse = await fetch("/api/imagekit/auth");
+
+  if (!authResponse.ok) {
+    const text = await authResponse.text().catch(() => "");
+    throw new Error(
+      `No se pudo obtener la autenticación para ImageKit: ${authResponse.status} ${text}`
+    );
+  }
+
   const authData = await authResponse.json();
 
   formData.append("signature", authData.signature);
@@ -30,7 +37,8 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   );
 
   if (!response.ok) {
-    throw new Error("Error al subir la imagen");
+    const body = await response.text().catch(() => "");
+    throw new Error(`Error al subir la imagen: ${response.status} ${body}`);
   }
 
   const data = await response.json();

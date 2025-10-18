@@ -7,7 +7,7 @@ import { auth } from "@clerk/nextjs/server";
 import { checkIsAdmin } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
-  title: "Panel de Administración | El Periódico",
+  title: "Panel de Administración | Aula de periodismo",
   description: "Gestiona el contenido del sitio",
 };
 
