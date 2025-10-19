@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Componente para renderizar videos embebidos de YouTube y Facebook
  */
