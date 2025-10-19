@@ -44,7 +44,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com https://*.clerk.accounts.dev",
               "connect-src 'self' https://upload.imagekit.io https://ik.imagekit.io https://*.clerk.accounts.dev https://clerk.dev https://api.clerk.dev https://api.clerk.com https://clerk-telemetry.com wss://*.clerk.accounts.dev",
               "media-src 'self' https: http:",
-              "frame-src 'self' https://*.clerk.accounts.dev https://clerk.dev https://www.youtube.com https://youtube.com https://www.facebook.com https://facebook.com",
+              "frame-src 'self' https://*.clerk.accounts.dev https://clerk.dev https://www.youtube.com https://youtube.com https://www.facebook.com https://facebook.com https://m.facebook.com",
               "worker-src 'self' blob:",
             ].join('; '),
           },

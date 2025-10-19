@@ -132,12 +132,18 @@ export default async function ArticuloPage({
               <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <time
-                  dateTime={(article.publishedAt || article.createdAt).toISOString()}
+                  dateTime={(
+                    article.publishedAt || article.createdAt
+                  ).toISOString()}
                   className="font-medium"
                 >
-                  {format(new Date(article.publishedAt || article.createdAt), "d 'de' MMMM, yyyy", {
-                    locale: es,
-                  })}
+                  {format(
+                    new Date(article.publishedAt || article.createdAt),
+                    "d 'de' MMMM, yyyy",
+                    {
+                      locale: es,
+                    }
+                  )}
                 </time>
               </div>
               {article.updatedAt &&

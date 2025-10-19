@@ -26,6 +26,7 @@ import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { uploadImageToImageKit } from "@/lib/imagekit";
 import { MarkdownEditor } from "./markdown-editor";
+import { MarkdownVideo } from "./video-embed";
 
 interface ArticleFormProps {
   article?: Articulo;
@@ -52,7 +53,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   };
 
   const [publishedAt, setPublishedAt] = useState<string>(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split("T")[0]
   );
 
   // Update state when article changes (for edit mode)
@@ -438,7 +439,105 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                 )}
 
                 <div className="article-content mx-auto max-w-none font-serif">
-                  <ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ node, ...props }) => (
+                        <h1
+                          className="mb-4 md:mb-6 mt-8 md:mt-10 font-serif text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight break-words"
+                          {...props}
+                        />
+                      ),
+                      h2: ({ node, ...props }) => (
+                        <h2
+                          className="mb-3 md:mb-4 mt-6 md:mt-8 border-b-2 border-foreground/10 pb-2 font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-tight break-words"
+                          {...props}
+                        />
+                      ),
+                      h3: ({ node, ...props }) => (
+                        <h3
+                          className="mb-2 md:mb-3 mt-5 md:mt-6 font-serif text-lg md:text-xl lg:text-2xl font-bold tracking-tight break-words"
+                          {...props}
+                        />
+                      ),
+                      h4: ({ node, ...props }) => (
+                        <h4
+                          className="mb-2 mt-4 font-serif text-base md:text-lg lg:text-xl font-bold tracking-tight break-words"
+                          {...props}
+                        />
+                      ),
+                      a: ({ node, ...props }) => (
+                        <a
+                          className="font-semibold text-foreground underline decoration-foreground/30 decoration-2 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary break-words"
+                          {...props}
+                        />
+                      ),
+                      blockquote: ({ node, ...props }) => (
+                        <blockquote
+                          className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 pr-4 font-serif italic text-[17px] leading-[1.7] text-foreground/80 break-words overflow-hidden"
+                          {...props}
+                        />
+                      ),
+                      strong: ({ node, ...props }) => (
+                        <strong
+                          className="font-semibold text-foreground break-words"
+                          {...props}
+                        />
+                      ),
+                      code: ({ node, inline, ...props }: any) =>
+                        inline ? (
+                          <code
+                            className="rounded bg-muted px-1.5 py-0.5 font-mono text-[15px] text-foreground break-words"
+                            {...props}
+                          />
+                        ) : (
+                          <pre className="block rounded border-2 border-border bg-muted/30 p-4 overflow-x-auto max-w-full">
+                            <code
+                              className="font-mono text-sm leading-relaxed whitespace-pre"
+                              {...props}
+                            />
+                          </pre>
+                        ),
+                      ul: ({ node, ...props }) => (
+                        <ul
+                          className="my-5 list-disc space-y-3 pl-8 break-words"
+                          {...props}
+                        />
+                      ),
+                      ol: ({ node, ...props }) => (
+                        <ol
+                          className="my-5 list-decimal space-y-3 pl-8 break-words"
+                          {...props}
+                        />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li
+                          className="text-[18px] leading-[1.75] text-foreground/95 break-words"
+                          style={{
+                            fontFamily:
+                              'Georgia, Cambria, "Times New Roman", Times, serif',
+                          }}
+                          {...props}
+                        />
+                      ),
+                      hr: ({ node, ...props }) => (
+                        <hr
+                          className="my-8 border-t-2 border-foreground/20"
+                          {...props}
+                        />
+                      ),
+                      p: ({ node, ...props }) => (
+                        <p
+                          className="mb-4 md:mb-6 text-base md:text-[18px] leading-[1.65] md:leading-[1.75] tracking-wide text-foreground/95 break-words"
+                          style={{
+                            fontFamily:
+                              'Georgia, Cambria, "Times New Roman", Times, serif',
+                          }}
+                          {...props}
+                        />
+                      ),
+                      img: (props) => <MarkdownVideo {...props} />,
+                    }}
+                  >
                     {contenido ||
                       "*Escribe contenido en Markdown para ver la vista previa...*"}
                   </ReactMarkdown>

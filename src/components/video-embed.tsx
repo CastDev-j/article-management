@@ -1,13 +1,9 @@
-'use client';
+"use client";
 
-/**
- * Componente para renderizar videos embebidos de YouTube y Facebook
- */
-
-import React, { useState } from 'react';
-import { parseVideoUrl } from '@/lib/video-utils';
-import { ExternalLink, Play, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import { parseVideoUrl } from "@/lib/video-utils";
+import { ExternalLink, Play, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface VideoEmbedProps {
   src: string;
@@ -16,200 +12,328 @@ interface VideoEmbedProps {
   height?: number;
 }
 
-export function VideoEmbed({ 
-  src, 
+export function VideoEmbed({
+  src,
   title = "Video",
   width = 560,
-  height = 315
+  height = 315,
 }: VideoEmbedProps) {
   const [loadError, setLoadError] = useState(false);
   const [showIframe, setShowIframe] = useState(false);
   const videoInfo = parseVideoUrl(src);
-  
-  // Facebook videos son más restrictivos, mostrar enlace directo por defecto
-  const isFacebook = videoInfo.platform === 'facebook';
-  const shouldShowDirectLink = isFacebook;
-  
+
+  const aspectRatio = (height / width) * 100;
+  const platformName =
+    videoInfo.platform === "youtube"
+      ? "YouTube"
+      : videoInfo.platform === "facebook"
+      ? "Facebook"
+      : "Video";
+
+  const VideoContainer = ({ children }: { children: React.ReactNode }) => (
+    <div className="my-4 sm:my-6 w-full max-w-4xl mx-auto">
+      <div
+        className="relative w-full overflow-hidden rounded-lg border border-stone-300 bg-stone-100 shadow-sm"
+        style={{ paddingBottom: `${aspectRatio}%` }}
+      >
+        {children}
+      </div>
+      {title && (
+        <div className="mt-2 px-2 text-center text-xs sm:text-sm text-stone-600">
+          {title}
+        </div>
+      )}
+    </div>
+  );
+
   if (!videoInfo.embedUrl) {
     return (
-      <div className="my-8 p-4 bg-muted/50 border-2 border-dashed border-border rounded-lg text-center">
-        <p className="text-sm text-muted-foreground">
-          Video no soportado o URL inválida: <br />
-          <code className="text-xs">{src}</code>
-        </p>
+      <div className="my-4 sm:my-6 w-full max-w-4xl mx-auto">
+        <div className="p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-lg text-center">
+          <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 text-stone-400 mx-auto mb-3" />
+          <p className="text-xs sm:text-sm font-medium text-stone-900 mb-2">
+            Video no soportado o URL inválida
+          </p>
+          <code className="text-xs text-stone-600 bg-white px-2 sm:px-3 py-1 rounded border border-stone-200 break-all">
+            {src}
+          </code>
+        </div>
       </div>
     );
   }
 
-  const aspectRatio = (height / width) * 100;
-
-  // Mostrar botón de carga inicial, enlace directo para Facebook, o si hay error
-  if (!showIframe || loadError || shouldShowDirectLink) {
+  if (loadError) {
     return (
-      <figure className="my-8 max-w-full">
-        <div 
-          className="relative w-full overflow-hidden rounded-lg border-2 border-border bg-muted flex items-center justify-center"
-          style={{ paddingBottom: `${aspectRatio}%` }}
-        >
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
-            {loadError ? (
-              <>
-                <AlertCircle className="h-12 w-12 text-muted-foreground" />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    No se pudo cargar el video embebido
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Puede deberse a restricciones del navegador o la plataforma
-                  </p>
-                  <Button asChild variant="outline" size="sm">
-                    <a 
-                      href={src} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Ver en {videoInfo.platform === 'youtube' ? 'YouTube' : 'Facebook'}
-                    </a>
-                  </Button>
-                </div>
-              </>
-            ) : shouldShowDirectLink ? (
-              <>
-                <Play className="h-12 w-12 text-primary" fill="currentColor" />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    {title || 'Video de Facebook'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Los videos de Facebook requieren abrir el enlace original
-                  </p>
-                  <Button asChild size="sm">
-                    <a 
-                      href={src} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Ver en Facebook
-                    </a>
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="relative">
-                  <Play className="h-16 w-16 text-primary" fill="currentColor" />
-                  <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    {title || 'Video'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Plataforma: {videoInfo.platform === 'youtube' ? 'YouTube' : 'Facebook'}
-                  </p>
-                  <div className="flex gap-2 justify-center">
-                    <Button 
-                      onClick={() => setShowIframe(true)}
-                      size="sm"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <Play className="h-4 w-4" />
-                      Cargar Video
-                    </Button>
-                    <Button asChild variant="outline" size="sm">
-                      <a 
-                        href={src} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        Ver en {videoInfo.platform === 'youtube' ? 'YouTube' : 'Facebook'}
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
+      <VideoContainer>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50">
+          <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-stone-400" />
+          <div className="text-center max-w-xs sm:max-w-md px-2">
+            <p className="text-xs sm:text-sm font-medium text-stone-900 mb-2">
+              No se pudo cargar el video
+            </p>
+            <p className="text-xs text-stone-600 mb-3 sm:mb-4">
+              El video no está disponible debido a restricciones de privacidad o
+              no existe
+            </p>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="text-xs sm:text-sm"
+            >
+              <a
+                href={src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 sm:gap-2"
+              >
+                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                Abrir en {platformName}
+              </a>
+            </Button>
           </div>
         </div>
-        {title && (
-          <figcaption className="mt-2 text-center font-sans text-sm italic text-muted-foreground break-words">
-            {title}
-          </figcaption>
-        )}
-      </figure>
+      </VideoContainer>
+    );
+  }
+
+  if (!showIframe) {
+    return (
+      <VideoContainer>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50">
+          <div
+            className="p-3 sm:p-4 rounded-full bg-stone-200 hover:bg-stone-300 transition-colors cursor-pointer touch-manipulation active:bg-stone-400"
+            onClick={() => setShowIframe(true)}
+          >
+            <Play
+              className="h-10 w-10 sm:h-12 sm:w-12 text-stone-900"
+              fill="currentColor"
+            />
+          </div>
+          <div className="text-center px-2">
+            <div className="flex flex-col gap-2 justify-center items-center">
+              <Button
+                onClick={() => setShowIframe(true)}
+                size="sm"
+                className="inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm min-h-[36px] px-3 sm:px-4 w-full sm:w-auto touch-manipulation"
+              >
+                <Play className="h-3 w-3 sm:h-4 sm:w-4" />
+                Cargar Video
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="text-xs sm:text-sm w-full sm:w-auto"
+              >
+                <a
+                  href={src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 sm:gap-2 min-h-[36px] px-3 sm:px-4 touch-manipulation"
+                >
+                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Ver en {platformName}
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </VideoContainer>
     );
   }
 
   return (
-    <figure className="my-8 max-w-full">
-      <div 
-        className="relative w-full overflow-hidden rounded-lg border-2 border-border bg-muted"
-        style={{ paddingBottom: `${aspectRatio}%` }}
-      >
-        <iframe
-          src={videoInfo.embedUrl}
-          title={title}
-          className="absolute inset-0 w-full h-full"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          loading="lazy"
-          onError={() => setLoadError(true)}
-          onLoad={() => setLoadError(false)}
-        />
-      </div>
-      {title && (
-        <figcaption className="mt-2 text-center font-sans text-sm italic text-muted-foreground break-words">
-          {title}
-        </figcaption>
-      )}
-    </figure>
+    <VideoContainer>
+      <iframe
+        src={videoInfo.embedUrl}
+        title={title}
+        className="absolute inset-0 w-full h-full"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        loading="lazy"
+        onError={() => setLoadError(true)}
+        onLoad={() => setLoadError(false)}
+      />
+    </VideoContainer>
   );
 }
 
-// Componente para usar con ReactMarkdown
+// Componente que maneja correctamente videos e imágenes sin conflictos de hidratación
 export function MarkdownVideo({ node, ...props }: any) {
   const { src, alt, title } = props;
-  
-  // Debug: Imprimir información recibida
-  console.log('MarkdownVideo props:', { src, alt, title, props });
-  
-  // Solo procesar si es un enlace de video
-  const videoInfo = parseVideoUrl(src || '');
-  console.log('Video info:', videoInfo);
-  
-  if (videoInfo.platform === 'unknown') {
-    // Renderizar como imagen normal si no es un video
+  const videoInfo = parseVideoUrl(src || "");
+
+  // Si es imagen normal, la renderizamos sin wrapper
+  if (videoInfo.platform === "unknown") {
     return (
-      <span className="my-8 block max-w-full">
+      <>
         <img
           {...props}
-          className="w-full max-w-full h-auto rounded-lg border-2 border-border"
+          className="w-full h-auto rounded-lg border border-stone-300"
           loading="lazy"
+          style={{ display: "block", margin: "1.5rem 0" }}
         />
         {alt && (
-          <span className="mt-2 block text-center font-sans text-sm italic text-muted-foreground break-words">
-            {alt}
+          <span
+            className="block text-center text-sm text-stone-600"
+            style={{ marginTop: "-1rem", marginBottom: "1.5rem" }}
+          >
+            <em>{alt}</em>
           </span>
         )}
-      </span>
+      </>
     );
   }
-  
-  // Mostrar información de debug si es un video detectado
+
+  // Para videos, renderizamos directamente el VideoEmbed sin wrappers problemáticos
+  return <VideoEmbedInline src={src} title={alt || title} />;
+}
+
+// Versión inline del VideoEmbed para usar en markdown
+function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
+  const [loadError, setLoadError] = useState(false);
+  const [showIframe, setShowIframe] = useState(false);
+  const videoInfo = parseVideoUrl(src);
+
+  const aspectRatio = (315 / 560) * 100;
+  const platformName =
+    videoInfo.platform === "youtube"
+      ? "YouTube"
+      : videoInfo.platform === "facebook"
+      ? "Facebook"
+      : "Video";
+
+  if (!videoInfo.embedUrl) {
+    return (
+      <>
+        <span
+          className="block w-full p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-lg text-center max-w-4xl mx-auto"
+          style={{
+            margin: "1rem 0",
+            marginTop: "1.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 text-stone-400 mx-auto mb-3" />
+          <span className="text-xs sm:text-sm font-medium text-stone-900 mb-2 block">
+            Video no soportado o URL inválida
+          </span>
+          <code className="text-xs text-stone-600 bg-white px-2 sm:px-3 py-1 rounded border border-stone-200 break-all">
+            {src}
+          </code>
+        </span>
+      </>
+    );
+  }
+
+  const videoContent = (
+    <>
+      <span
+        className="relative w-full overflow-hidden rounded-lg border border-stone-300 bg-stone-100 block shadow-sm"
+        style={{ paddingBottom: `${aspectRatio}%` }}
+      >
+        {loadError ? (
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50">
+            <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-stone-400" />
+            <span className="text-center max-w-xs sm:max-w-md px-2">
+              <span className="text-xs sm:text-sm font-medium text-stone-900 mb-2 block">
+                No se pudo cargar el video
+              </span>
+              <span className="text-xs text-stone-600 mb-3 sm:mb-4 block">
+                El video no está disponible debido a restricciones de privacidad
+                o no existe
+              </span>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="text-xs sm:text-sm"
+              >
+                <a
+                  href={src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 sm:gap-2"
+                >
+                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Abrir en {platformName}
+                </a>
+              </Button>
+            </span>
+          </span>
+        ) : !showIframe ? (
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50">
+            <span
+              className="p-3 sm:p-4 rounded-full bg-stone-200 hover:bg-stone-300 transition-colors cursor-pointer touch-manipulation active:bg-stone-400"
+              onClick={() => setShowIframe(true)}
+            >
+              <Play
+                className="h-10 w-10 sm:h-12 sm:w-12 text-stone-900"
+                fill="currentColor"
+              />
+            </span>
+            <span className="text-center px-2">
+              <span className="flex flex-col gap-2 justify-center items-center">
+                <Button
+                  onClick={() => setShowIframe(true)}
+                  size="sm"
+                  className="inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm min-h-[36px] px-3 sm:px-4 w-full sm:w-auto touch-manipulation"
+                >
+                  <Play className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Cargar Video
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="text-xs sm:text-sm w-full sm:w-auto"
+                >
+                  <a
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 sm:gap-2 min-h-[36px] px-3 sm:px-4 touch-manipulation"
+                  >
+                    <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Ver en {platformName}
+                  </a>
+                </Button>
+              </span>
+            </span>
+          </span>
+        ) : (
+          <iframe
+            src={videoInfo.embedUrl}
+            title={title || "Video"}
+            className="absolute inset-0 w-full h-full"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            onError={() => setLoadError(true)}
+            onLoad={() => setLoadError(false)}
+          />
+        )}
+      </span>
+      {title && (
+        <span
+          className="text-center text-xs sm:text-sm text-stone-600 block px-2"
+          style={{ marginTop: "0.5rem" }}
+        >
+          <em>{title}</em>
+        </span>
+      )}
+    </>
+  );
+
   return (
-    <div className="my-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-      <p className="text-sm font-bold text-blue-800 mb-2">🎥 VIDEO DETECTADO</p>
-      <p className="text-xs text-blue-600">Plataforma: {videoInfo.platform}</p>
-      <p className="text-xs text-blue-600">ID: {videoInfo.videoId}</p>
-      <p className="text-xs text-blue-600 mb-3">URL: {src}</p>
-      <VideoEmbed src={src} title={alt || title} />
-    </div>
+    <span
+      className="block w-full max-w-4xl mx-auto"
+      style={{ margin: "1rem 0", marginTop: "1.5rem", marginBottom: "1.5rem" }}
+    >
+      {videoContent}
+    </span>
   );
 }

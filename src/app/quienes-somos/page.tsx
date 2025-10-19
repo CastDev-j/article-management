@@ -58,6 +58,7 @@ export default function QuienesSomosPage() {
                   src="https://ik.imagekit.io/gns9zkk92/WhatsApp%20Image%202025-10-19%20at%2012.43.17%20PM.jpeg?updatedAt=1760899850740"
                   alt="VoxMontejano - Proyecto académico de periodismo"
                   className="w-full h-auto rounded-lg shadow-lg"
+                  loading="lazy"
                 />
               </div>
             </div>
