@@ -11,6 +11,7 @@ interface Article {
   descripcion: string | null;
   imagen: string | null;
   createdAt: Date;
+  publishedAt: Date | null;
   autors: string[];
   articuloCategorias?: {
     categoria: {
@@ -103,7 +104,9 @@ export function ArticleGrid({
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     <time>
-                      {new Date(article.createdAt).toLocaleDateString("es-ES", {
+                      {new Date(
+                        article.publishedAt || article.createdAt
+                      ).toLocaleDateString("es-ES", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",

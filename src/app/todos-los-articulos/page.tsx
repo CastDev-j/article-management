@@ -255,14 +255,13 @@ export default async function TodosLosArticulosPage({
                         </div>
                         <div className="flex justify-end mt-1 md:mt-2">
                           <span className="text-[10px] md:text-xs text-muted-foreground">
-                            {new Date(article.createdAt).toLocaleDateString(
-                              "es-ES",
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              }
-                            )}
+                            {new Date(
+                              article.publishedAt || article.createdAt
+                            ).toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
                           </span>
                         </div>
                       </div>

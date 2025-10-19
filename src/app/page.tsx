@@ -36,8 +36,7 @@ export default async function HomePage() {
   });
 
   const featured = featuredArticles.slice(0, 4);
-  const recent = featuredArticles.slice(0, 6); // Include the 4 carousel items plus 2 more
-
+  const recent = featuredArticles.slice(0, 6);
   return (
     <>
       <PublicHeader />
