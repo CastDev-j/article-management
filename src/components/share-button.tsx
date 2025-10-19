@@ -9,6 +9,8 @@ import {
   Twitter,
   Linkedin,
   Facebook,
+  MessageCircle,
+  Instagram,
 } from "lucide-react";
 
 interface ShareButtonProps {
@@ -75,14 +77,14 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
           <div className="flex flex-col gap-2">
             <a
               className="flex items-center px-2 py-1 rounded hover:bg-accent"
-              href={`https://twitter.com/intent/tweet?text=${encoded(
-                title
-              )}&url=${encoded(shareUrl)}`}
+              href={`https://api.whatsapp.com/send?text=${encoded(
+                `${title} ${shareUrl}`
+              )}`}
               target="_blank"
               rel="noreferrer"
             >
-              <Twitter className="mr-2 h-4 w-4" />
-              Twitter
+              <MessageCircle className="mr-2 h-4 w-4" />
+              WhatsApp
             </a>
             <a
               className="flex items-center px-2 py-1 rounded hover:bg-accent"
@@ -94,6 +96,32 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
             >
               <Facebook className="mr-2 h-4 w-4" />
               Facebook
+            </a>
+            <a
+              className="flex items-center px-2 py-1 rounded hover:bg-accent"
+              href={`https://www.instagram.com/`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                // Instagram doesn't have direct URL sharing, so copy to clipboard instead
+                copyToClipboard();
+                alert('URL copiada para compartir en Instagram Stories');
+              }}
+            >
+              <Instagram className="mr-2 h-4 w-4" />
+              Instagram
+            </a>
+            <a
+              className="flex items-center px-2 py-1 rounded hover:bg-accent"
+              href={`https://twitter.com/intent/tweet?text=${encoded(
+                title
+              )}&url=${encoded(shareUrl)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Twitter className="mr-2 h-4 w-4" />
+              Twitter
             </a>
             <a
               className="flex items-center px-2 py-1 rounded hover:bg-accent"

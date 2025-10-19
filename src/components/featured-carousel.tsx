@@ -19,6 +19,7 @@ interface FeaturedArticle {
   descripcion: string | null;
   imagen: string | null;
   createdAt: Date;
+  publishedAt: Date | null;
   autors: string[];
   articuloCategorias?: {
     categoria: {
@@ -93,7 +94,7 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                       <div className="flex items-center gap-1 md:gap-1.5">
                         <Calendar className="h-3 w-3 md:h-4 md:w-4" />
                         <time>
-                          {new Date(article.createdAt).toLocaleDateString(
+                          {new Date(article.publishedAt || article.createdAt).toLocaleDateString(
                             "es-ES",
                             {
                               year: "numeric",

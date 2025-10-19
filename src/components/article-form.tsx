@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,17 +36,41 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    article?.articuloCategorias.map((ac) => ac.categoria.id) || []
-  );
-  const [autors, setAutors] = useState<string[]>(
-    article?.autors && article.autors.length > 0 ? article.autors : [""]
-  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [autors, setAutors] = useState<string[]>([""]);
 
-  const [titulo, setTitulo] = useState(article?.titulo || "");
-  const [descripcion, setDescripcion] = useState(article?.descripcion || "");
-  const [contenido, setContenido] = useState(article?.contenido || "");
-  const [imagen, setImagen] = useState(article?.imagen || "");
+  const [titulo, setTitulo] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [contenido, setContenido] = useState("");
+  const [imagen, setImagen] = useState("");
+  // Helper function to convert date to YYYY-MM-DD format
+  const formatDateForInput = (date: Date | string | null) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    return d.toISOString().split('T')[0];
+  };
+  
+  const [publishedAt, setPublishedAt] = useState<string>("");
+  
+  // Update state when article changes (for edit mode)
+  useEffect(() => {
+    if (article?.publishedAt) {
+      setPublishedAt(formatDateForInput(article.publishedAt));
+    }
+  }, [article?.publishedAt]);
+  
+  // Update other states when article changes
+  useEffect(() => {
+    if (article) {
+      setTitulo(article.titulo || "");
+      setDescripcion(article.descripcion || "");
+      setContenido(article.contenido || "");
+      setImagen(article.imagen || "");
+      setSelectedCategories(article.articuloCategorias.map((ac) => ac.categoria.id));
+      setAutors(article.autors && article.autors.length > 0 ? article.autors : [""]);
+    }
+  }, [article]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,6 +88,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
         autors: filteredAutors.length > 0 ? filteredAutors : ["Anónimo"],
         categorias: selectedCategories,
         publicado: formData.get("publicado") === "on",
+        publishedAt: publishedAt || undefined,
       };
 
       if (article) {
@@ -154,53 +179,69 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="imagen">Imagen del Artículo</Label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Input
-                        id="imagen"
-                        name="imagen"
-                        type="url"
-                        value={imagen}
-                        onChange={(e) => setImagen(e.target.value)}
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                        className="pr-10"
-                      />
-                      {imagen && (
-                        <ImageIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-600" />
-                      )}
-                    </div>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploadingImage || loading}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                          document.getElementById("image-upload")?.click()
-                        }
-                        disabled={uploadingImage || loading}
-                        title="Subir imagen"
-                      >
-                        {uploadingImage ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Upload className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+                  <Label>Fecha de publicación (opcional)</Label>
+                  <div className="space-y-1">
+                    <Input
+                      type="date"
+                      value={publishedAt}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => setPublishedAt(e.target.value)}
+                      disabled={loading}
+                    />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Ingresa una URL o sube una imagen desde tu dispositivo
+                    Máximo hasta la fecha de hoy
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="imagen">Imagen del Artículo</Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="imagen"
+                      name="imagen"
+                      type="url"
+                      value={imagen}
+                      onChange={(e) => setImagen(e.target.value)}
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                      className="pr-10"
+                    />
+                    {imagen && (
+                      <ImageIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-600" />
+                    )}
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage || loading}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() =>
+                        document.getElementById("image-upload")?.click()
+                      }
+                      disabled={uploadingImage || loading}
+                      title="Subir imagen"
+                    >
+                      {uploadingImage ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Ingresa una URL o sube una imagen desde tu dispositivo
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -328,7 +369,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                     defaultChecked={article?.publicado}
                   />
                   <Label htmlFor="publicado" className="cursor-pointer">
-                    Publicar artículo inmediatamente
+                    Publicar artículo
                   </Label>
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
@@ -391,108 +432,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                 )}
 
                 <div className="article-content mx-auto max-w-none font-serif">
-                  <ReactMarkdown
-                    components={{
-                      h1: ({ node, ...props }) => (
-                        <h1
-                          className="mb-6 mt-10 text-4xl font-bold leading-tight tracking-tight"
-                          {...props}
-                        />
-                      ),
-                      h2: ({ node, ...props }) => (
-                        <h2
-                          className="mb-4 mt-8 border-b-2 border-foreground/10 pb-2 text-3xl font-bold tracking-tight"
-                          {...props}
-                        />
-                      ),
-                      h3: ({ node, ...props }) => (
-                        <h3
-                          className="mb-3 mt-6 text-2xl font-bold tracking-tight"
-                          {...props}
-                        />
-                      ),
-                      h4: ({ node, ...props }) => (
-                        <h4
-                          className="mb-2 mt-4 text-xl font-bold tracking-tight"
-                          {...props}
-                        />
-                      ),
-                      p: ({ node, ...props }) => (
-                        <p
-                          className="mb-4 text-lg leading-relaxed text-foreground/90"
-                          {...props}
-                        />
-                      ),
-                      a: ({ node, ...props }) => (
-                        <a
-                          className="font-semibold text-foreground underline decoration-foreground/30 decoration-2 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary"
-                          {...props}
-                        />
-                      ),
-                      blockquote: ({ node, ...props }) => (
-                        <blockquote
-                          className="my-6 border-l-4 border-foreground bg-muted/50 py-4 pl-6 italic text-foreground/80"
-                          {...props}
-                        />
-                      ),
-                      strong: ({ node, ...props }) => (
-                        <strong
-                          className="font-bold text-foreground"
-                          {...props}
-                        />
-                      ),
-                      code: ({ node, inline, ...props }: any) =>
-                        inline ? (
-                          <code
-                            className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground"
-                            {...props}
-                          />
-                        ) : (
-                          <code
-                            className="block rounded border-2 border-border bg-muted/30 p-4 font-mono text-sm"
-                            {...props}
-                          />
-                        ),
-                      ul: ({ node, ...props }) => (
-                        <ul
-                          className="my-4 list-disc space-y-2 pl-8"
-                          {...props}
-                        />
-                      ),
-                      ol: ({ node, ...props }) => (
-                        <ol
-                          className="my-4 list-decimal space-y-2 pl-8"
-                          {...props}
-                        />
-                      ),
-                      li: ({ node, ...props }) => (
-                        <li
-                          className="text-lg leading-relaxed text-foreground/90"
-                          {...props}
-                        />
-                      ),
-                      hr: ({ node, ...props }) => (
-                        <hr
-                          className="my-8 border-t-2 border-foreground/20"
-                          {...props}
-                        />
-                      ),
-                      img: ({ node, ...props }) => (
-                        <span className="my-8 block">
-                          <img
-                            {...props}
-                            className="w-full rounded-lg border-2 border-border"
-                            loading="lazy"
-                          />
-                          {props.alt && (
-                            <span className="mt-2 block text-center text-sm italic text-muted-foreground">
-                              {props.alt}
-                            </span>
-                          )}
-                        </span>
-                      ),
-                    }}
-                  >
+                  <ReactMarkdown>
                     {contenido ||
                       "*Escribe contenido en Markdown para ver la vista previa...*"}
                   </ReactMarkdown>

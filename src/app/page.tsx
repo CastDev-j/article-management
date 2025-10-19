@@ -25,13 +25,18 @@ export default async function HomePage() {
     include: {
       articuloCategorias: true,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      {
+        publishedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
   });
 
-  const featured = featuredArticles.slice(0, 5);
-  const recent = featuredArticles.slice(5, 11);
+  const featured = featuredArticles.slice(0, 4);
+  const recent = featuredArticles.slice(0, 6); // Include the 4 carousel items plus 2 more
 
   return (
     <>

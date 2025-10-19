@@ -25,6 +25,7 @@ export async function createArticle(data: ArticuloFormData) {
       imagen: data.imagen || null,
       autors: data.autors && data.autors.length > 0 ? data.autors : ["Anónimo"],
       publicado: data.publicado,
+      publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
       articuloCategorias: {
         create: data.categorias.map((categoryId) => ({
           categoriaId: categoryId,
@@ -33,8 +34,10 @@ export async function createArticle(data: ArticuloFormData) {
     },
   });
 
+  // Revalidate all relevant paths
   revalidatePath("/admin/articulos");
-  revalidatePath("/articulos");
+  revalidatePath("/");
+  revalidatePath("/todos-los-articulos");
   redirect("/admin/articulos");
 }
 
@@ -74,6 +77,7 @@ export async function updateArticle(id: string, data: ArticuloFormData) {
       imagen: data.imagen || null,
       autors: data.autors && data.autors.length > 0 ? data.autors : ["Anónimo"],
       publicado: data.publicado,
+      publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
       articuloCategorias: {
         deleteMany: {},
         create: data.categorias.map((categoryId) => ({
@@ -83,9 +87,11 @@ export async function updateArticle(id: string, data: ArticuloFormData) {
     },
   });
 
+  // Revalidate all relevant paths
   revalidatePath("/admin/articulos");
   revalidatePath(`/articulos/${slug}`);
-  revalidatePath("/articulos");
+  revalidatePath("/");
+  revalidatePath("/todos-los-articulos");
   redirect("/admin/articulos");
 }
 
@@ -105,7 +111,8 @@ export async function deleteArticle(id: string) {
   });
 
   revalidatePath("/admin/articulos");
-  revalidatePath("/articulos");
+  revalidatePath("/");
+  revalidatePath("/todos-los-articulos");
 }
 
 export async function togglePublished(id: string) {
@@ -127,7 +134,8 @@ export async function togglePublished(id: string) {
   });
 
   revalidatePath("/admin/articulos");
-  revalidatePath("/articulos");
+  revalidatePath("/");
+  revalidatePath("/todos-los-articulos");
 }
 
 export async function getArticles(options?: {
@@ -168,9 +176,14 @@ export async function getArticles(options?: {
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      {
+        publishedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
   }) as Promise<Articulo[]>;
 }
 
@@ -218,9 +231,14 @@ export async function getArticlesWithPagination(options?: {
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      {
+        publishedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
   });
 
   const total = allArticles.length;

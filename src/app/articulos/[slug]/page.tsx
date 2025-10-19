@@ -45,7 +45,7 @@ export async function generateMetadata({
       title: article.titulo,
       description: article.descripcion || article.contenido.slice(0, 160),
       type: "article",
-      publishedTime: article.createdAt.toISOString(),
+      publishedTime: (article.publishedAt || article.createdAt).toISOString(),
       modifiedTime: article.updatedAt.toISOString(),
       authors: article.autors,
       images: article.imagen
@@ -131,10 +131,10 @@ export default async function ArticuloPage({
               <div className="flex items-center gap-2 uppercase tracking-wide text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <time
-                  dateTime={article.createdAt.toISOString()}
+                  dateTime={(article.publishedAt || article.createdAt).toISOString()}
                   className="font-medium"
                 >
-                  {format(new Date(article.createdAt), "d 'de' MMMM, yyyy", {
+                  {format(new Date(article.publishedAt || article.createdAt), "d 'de' MMMM, yyyy", {
                     locale: es,
                   })}
                 </time>

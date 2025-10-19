@@ -22,7 +22,7 @@ export async function Footer() {
         <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
-              Gestión de Artículos
+              VoxMontejano
             </h3>
             <div>
               <p className="text-pretty text-xs md:text-sm text-muted-foreground mb-3">
@@ -50,6 +50,14 @@ export async function Footer() {
                   className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Todos los Artículos
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/quienes-somos"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Quiénes somos
                 </Link>
               </li>
             </ul>
@@ -102,7 +110,7 @@ export async function Footer() {
             <ul className="space-y-2 text-xs md:text-sm">
               <li>
                 <span className="text-muted-foreground">
-                  © 2025 Gestión de Artículos
+                  © 2025 VoxMontejano
                 </span>
               </li>
             </ul>

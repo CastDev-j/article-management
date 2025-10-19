@@ -42,6 +42,7 @@ function mapRowToArticulo(row: any) {
     publicado: row.publicado,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    publishedAt: row.published_at,
   };
 }
 
@@ -160,7 +161,7 @@ export const prisma = {
       const whereSql = whereClauses.length
         ? "WHERE " + whereClauses.join(" AND ")
         : "";
-      const orderBy = opts.orderBy ? "ORDER BY created_at DESC" : "";
+      const orderBy = opts.orderBy ? "ORDER BY COALESCE(published_at, created_at) DESC" : "ORDER BY COALESCE(published_at, created_at) DESC";
       const res = await query(
         `SELECT * FROM articulos ${whereSql} ${orderBy}`,
         params
@@ -198,9 +199,10 @@ export const prisma = {
     async create({ data }: { data: any }) {
       const id = data.id || require("crypto").randomUUID();
       const autorsJson = JSON.stringify(data.autors || ["Anónimo"]);
+      const publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
       const res = await query(
-        `INSERT INTO articulos (id, titulo, slug, descripcion, contenido, imagen, autors, publicado, created_at, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(),NOW()) RETURNING *`,
+        `INSERT INTO articulos (id, titulo, slug, descripcion, contenido, imagen, autors, publicado, published_at, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(),NOW()) RETURNING *`,
         [
           id,
           data.titulo,
@@ -210,6 +212,7 @@ export const prisma = {
           data.imagen,
           autorsJson,
           data.publicado || false,
+          publishedAt,
         ]
       );
 
@@ -245,6 +248,13 @@ export const prisma = {
           fields.push(`${key} = $${idx++}`);
           params.push((data as any)[key] ?? null);
         }
+      }
+
+      // Handle publishedAt separately
+      if ("publishedAt" in data) {
+        fields.push(`published_at = $${idx++}`);
+        const publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
+        params.push(publishedAt);
       }
 
       // Handle autors separately since it needs JSON stringification

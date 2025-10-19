@@ -45,6 +45,7 @@ function mapRowToArticulo(row: any) {
     publicado: row.publicado,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    publishedAt: row.published_at,
   };
 }
 
@@ -124,7 +125,7 @@ export const prisma = {
         // Only support slug filter used in the app
         const slug = opts.where.articuloCategorias.some.categoria.slug;
         const res = await query(
-          `SELECT a.* FROM articulos a JOIN articulo_categorias ac ON ac.articulo_id = a.id JOIN categorias c ON c.id = ac.categoria_id WHERE c.slug = $1 ORDER BY a.created_at DESC`,
+          `SELECT a.* FROM articulos a JOIN articulo_categorias ac ON ac.articulo_id = a.id JOIN categorias c ON c.id = ac.categoria_id WHERE c.slug = $1 ORDER BY a.published_at DESC NULLS LAST, a.created_at DESC`,
           [slug]
         );
         const articulos = res.rows.map(mapRowToArticulo);
@@ -163,7 +164,7 @@ export const prisma = {
       const whereSql = whereClauses.length
         ? "WHERE " + whereClauses.join(" AND ")
         : "";
-      const orderBy = opts.orderBy ? "ORDER BY created_at DESC" : "";
+      const orderBy = opts.orderBy ? "ORDER BY published_at DESC NULLS LAST, created_at DESC" : "";
       const res = await query(
         `SELECT * FROM articulos ${whereSql} ${orderBy}`,
         params
@@ -202,8 +203,8 @@ export const prisma = {
       const id = data.id || require("crypto").randomUUID();
       const autorsJson = JSON.stringify(data.autors || ["Anónimo"]);
       const res = await query(
-        `INSERT INTO articulos (id, titulo, slug, descripcion, contenido, imagen, autors, publicado, created_at, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(),NOW()) RETURNING *`,
+        `INSERT INTO articulos (id, titulo, slug, descripcion, contenido, imagen, autors, publicado, published_at, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(),NOW()) RETURNING *`,
         [
           id,
           data.titulo,
@@ -213,6 +214,7 @@ export const prisma = {
           data.imagen,
           autorsJson,
           data.publicado || false,
+          data.publishedAt || null,
         ]
       );
 
@@ -243,9 +245,11 @@ export const prisma = {
         "contenido",
         "imagen",
         "publicado",
+        "publishedAt",
       ]) {
         if (key in data) {
-          fields.push(`${key} = $${idx++}`);
+          const dbKey = key === 'publishedAt' ? 'published_at' : key;
+          fields.push(`${dbKey} = $${idx++}`);
           params.push((data as any)[key] ?? null);
         }
       }

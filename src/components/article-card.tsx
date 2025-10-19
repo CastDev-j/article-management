@@ -58,10 +58,10 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
           <div className="flex w-full flex-col gap-1.5 md:gap-2 font-sans text-[10px] md:text-xs">
             <div className="flex items-center justify-end tracking-wide text-muted-foreground">
               <time
-                dateTime={articulo.createdAt.toISOString()}
+                dateTime={(articulo.publishedAt || articulo.createdAt).toISOString()}
                 className="font-medium uppercase"
               >
-                {format(new Date(articulo.createdAt), "d MMM yyyy", {
+                {format(new Date(articulo.publishedAt || articulo.createdAt), "d MMM yyyy", {
                   locale: es,
                 })}
               </time>

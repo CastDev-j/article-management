@@ -9,6 +9,7 @@ export interface Articulo {
   publicado: boolean;
   createdAt: Date;
   updatedAt: Date;
+  publishedAt: Date | null;
   articuloCategorias: {
     categoria: {
       id: string;
@@ -34,4 +35,5 @@ export interface ArticuloFormData {
   autors: string[];
   categorias: string[];
   publicado: boolean;
+  publishedAt?: string;
 }
