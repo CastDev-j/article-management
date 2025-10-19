@@ -21,8 +21,17 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   formData.append("fileName", file.name);
   formData.append("publicKey", IMAGEKIT_CONFIG.publicKey);
 
-  const authResponse = await fetch(`/api/imagekit/auth?t=${Date.now()}`, {
+  // Generar timestamp único con más entropía para evitar cache
+  const uniqueParam = `${Date.now()}_${Math.random().toString(36).substring(2)}_${crypto.randomUUID().substring(0, 8)}`;
+  
+  const authResponse = await fetch(`/api/imagekit/auth?t=${uniqueParam}`, {
+    method: 'GET',
     cache: "no-store",
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    },
   });
 
   if (!authResponse.ok) {

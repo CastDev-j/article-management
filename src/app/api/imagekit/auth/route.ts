@@ -11,16 +11,32 @@ export async function GET(request: Request) {
     );
   }
 
-  // Generar token con alta entropía usando múltiples fuentes de aleatoriedad
+  // Generar token con máxima entropía y unicidad garantizada
   const timestamp = Date.now();
-  const nanoTime = process.hrtime.bigint().toString();
-  const uuid = crypto.randomUUID();
-  const randomBytes1 = crypto.randomBytes(16).toString('hex');
-  const randomBytes2 = crypto.randomBytes(8).toString('hex');
-  const processId = process.pid.toString(36);
+  const microseconds = process.hrtime.bigint();
+  const uuid1 = crypto.randomUUID();
+  const uuid2 = crypto.randomUUID(); 
+  const randomBytes1 = crypto.randomBytes(24).toString('hex');
+  const randomBytes2 = crypto.randomBytes(16).toString('hex');
+  const randomBytes3 = crypto.randomBytes(8).toString('hex');
+  const processInfo = `${process.pid}_${Math.random().toString(36).substring(2)}`;
+  const requestId = crypto.randomBytes(12).toString('base64url');
   
-  // Combinar todas las fuentes para máxima unicidad
-  const token = `${timestamp}_${uuid}_${randomBytes1}_${nanoTime.slice(-8)}_${randomBytes2}_${processId}`;
+  // Token ultra-único combinando múltiples fuentes de entropía
+  const tokenParts = [
+    timestamp.toString(36),
+    microseconds.toString(36),
+    uuid1.replace(/-/g, ''),
+    uuid2.replace(/-/g, ''),
+    randomBytes1,
+    randomBytes2,
+    randomBytes3,
+    processInfo,
+    requestId,
+    Math.random().toString(36).substring(2)
+  ];
+  
+  const token = tokenParts.join('_');
 
   const expire = Math.floor(Date.now() / 1000) + 2400;
   const signature = crypto
@@ -47,8 +63,11 @@ export async function GET(request: Request) {
   }
 
   const res = NextResponse.json({ token, expire, signature });
-  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  // Headers anti-cache más estrictos
+  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0");
   res.headers.set("Surrogate-Control", "no-store");
   res.headers.set("Pragma", "no-cache");
+  res.headers.set("Expires", "0");
+  res.headers.set("ETag", `"${Date.now()}-${Math.random()}"`);
   return res;
 }
