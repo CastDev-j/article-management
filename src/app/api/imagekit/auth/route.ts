@@ -11,13 +11,16 @@ export async function GET(request: Request) {
     );
   }
 
-  const ts = Date.now().toString(36);
-  const uuidPart =
-    typeof (crypto as any).randomUUID === "function"
-      ? (crypto as any).randomUUID()
-      : crypto.randomBytes(16).toString("hex");
-  const randomPart = crypto.randomBytes(12).toString("hex");
-  const token = `${ts}-${uuidPart}-${randomPart}`;
+  // Generar token con alta entropía usando múltiples fuentes de aleatoriedad
+  const timestamp = Date.now();
+  const nanoTime = process.hrtime.bigint().toString();
+  const uuid = crypto.randomUUID();
+  const randomBytes1 = crypto.randomBytes(16).toString('hex');
+  const randomBytes2 = crypto.randomBytes(8).toString('hex');
+  const processId = process.pid.toString(36);
+  
+  // Combinar todas las fuentes para máxima unicidad
+  const token = `${timestamp}_${uuid}_${randomBytes1}_${nanoTime.slice(-8)}_${randomBytes2}_${processId}`;
 
   const expire = Math.floor(Date.now() / 1000) + 2400;
   const signature = crypto
