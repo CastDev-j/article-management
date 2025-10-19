@@ -25,22 +25,22 @@ export async function GET(request: Request) {
     .update(token + expire)
     .digest("hex");
 
-  // Temporary debug logging to help track token issuance in production logs.
-  try {
-    // Log a shortened token and requester info (avoid logging secrets).
-    // eslint-disable-next-line no-console
-    console.log(
-      "[imagekit-auth] token:",
-      token.slice(0, 12),
-      "expire:",
-      expire,
-      "from:",
-      request?.headers?.get("x-forwarded-for") ||
-        request?.headers?.get("host") ||
-        "-"
-    );
-  } catch (e) {
-    /* ignore logging errors */
+  // Debug logging solo en desarrollo
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      console.log(
+        "[imagekit-auth] token:",
+        token.slice(0, 12),
+        "expire:",
+        expire,
+        "from:",
+        request?.headers?.get("x-forwarded-for") ||
+          request?.headers?.get("host") ||
+          "-"
+      );
+    } catch (e) {
+      /* ignore logging errors */
+    }
   }
 
   const res = NextResponse.json({ token, expire, signature });

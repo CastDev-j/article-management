@@ -1,10 +1,18 @@
+// Validar que las variables de entorno estén configuradas
+const urlEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
+const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY;
+
+if (!urlEndpoint) {
+  throw new Error('NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT no está configurada');
+}
+
+if (!publicKey) {
+  throw new Error('NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY no está configurada');
+}
+
 export const IMAGEKIT_CONFIG = {
-  urlEndpoint:
-    process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT ||
-    "https://ik.imagekit.io/pcddcn6rq/",
-  publicKey:
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    "public_uYRJXjLiPIz3z0dICFHuFLmSh2A=",
+  urlEndpoint: urlEndpoint as string,
+  publicKey: publicKey as string,
 };
 
 export async function uploadImageToImageKit(file: File): Promise<string> {
@@ -34,12 +42,15 @@ export async function uploadImageToImageKit(file: File): Promise<string> {
   formData.append("expire", authData.expire);
   formData.append("token", authData.token);
 
-  try {
-    console.log(
-      "[imagekit] using token:",
-      authData.token?.toString?.()?.slice?.(0, 12)
-    );
-  } catch (e) {}
+  // Debug logging solo en desarrollo
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      console.log(
+        "[imagekit] using token:",
+        authData.token?.toString?.()?.slice?.(0, 12)
+      );
+    } catch (e) {}
+  }
 
   const response = await fetch(
     "https://upload.imagekit.io/api/v1/files/upload",

@@ -2,7 +2,14 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-const ORG_ID = "org_33wce8GoXTQgBn9rK4jMqua2aaY";
+const ORG_ID = process.env.CLERK_ADMIN_ORG_ID;
+
+if (!ORG_ID) {
+  throw new Error('CLERK_ADMIN_ORG_ID no está configurada en las variables de entorno');
+}
+
+// Garantizar que ORG_ID es string para TypeScript
+const ORGANIZATION_ID: string = ORG_ID;
 
 export async function checkIsAdmin(userId: string | null): Promise<boolean> {
   try {
@@ -13,7 +20,7 @@ export async function checkIsAdmin(userId: string | null): Promise<boolean> {
     const clerk = await clerkClient();
 
     const members = await clerk.organizations.getOrganizationMembershipList({
-      organizationId: ORG_ID,
+      organizationId: ORGANIZATION_ID,
       limit: 1,
       userId: [userId],
     });
