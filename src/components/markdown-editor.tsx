@@ -183,7 +183,6 @@ export function MarkdownEditor({
     if (!textarea) return;
 
     const start = selection.start;
-    // Usamos la misma sintaxis que las imágenes, pero ReactMarkdown lo detectará como video
     const videoMarkdown = `![${title}](${url})`;
     const before = value.substring(0, start);
     const after = value.substring(start);
@@ -460,8 +459,8 @@ export function MarkdownEditor({
               <Italic className="mr-2 h-4 w-4" />
               Cursiva
             </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuSub>
+            {/*<ContextMenuSeparator />
+             <ContextMenuSub>
               <ContextMenuSubTrigger>Multimedia</ContextMenuSubTrigger>
               <ContextMenuSubContent className="w-44">
                 <ContextMenuItem onClick={toolbarButtons[9].action}>
@@ -473,7 +472,7 @@ export function MarkdownEditor({
                   Video
                 </ContextMenuItem>
               </ContextMenuSubContent>
-            </ContextMenuSub>
+            </ContextMenuSub> */}
             <ContextMenuItem onClick={toolbarButtons[5].action}>
               <Link className="mr-2 h-4 w-4" />
               Enlace
@@ -630,7 +629,9 @@ export function MarkdownEditor({
                     if (isValidVideoUrl(videoUrl)) {
                       insertVideoMarkdown(videoUrl, videoTitle);
                     } else {
-                      alert("Por favor, ingresa una URL válida de YouTube o Facebook");
+                      alert(
+                        "Por favor, ingresa una URL válida de YouTube o Facebook"
+                      );
                     }
                   }
                 }}
@@ -647,7 +648,9 @@ export function MarkdownEditor({
                 if (videoUrl.trim() && isValidVideoUrl(videoUrl)) {
                   insertVideoMarkdown(videoUrl, videoTitle);
                 } else {
-                  alert("Por favor, ingresa una URL válida de YouTube o Facebook");
+                  alert(
+                    "Por favor, ingresa una URL válida de YouTube o Facebook"
+                  );
                 }
               }}
               disabled={!videoUrl.trim() || !isValidVideoUrl(videoUrl)}
