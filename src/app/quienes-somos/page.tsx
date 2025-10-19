@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PublicHeader } from "@/components/public-header";
 
 export const metadata: Metadata = {
-  title: "Quiénes Somos | VoxMontejano",
+  title: "¿Quiénes Somos? | VoxMontejano",
   description:
     "Aula de periodismo concentra las prácticas de los estudiantes de la licenciatura en Ciencias de la Comunicación.",
   keywords: [
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "proyecto académico",
   ],
   openGraph: {
-    title: "Quiénes Somos | VoxMontejano",
+    title: "¿Quiénes Somos? | VoxMontejano",
     description:
       "Aula de periodismo concentra las prácticas de los estudiantes de la licenciatura en Ciencias de la Comunicación.",
     type: "website",
@@ -29,7 +29,7 @@ export default function QuienesSomosPage() {
           <article className="max-w-6xl mx-auto">
             <header className="text-center mb-16">
               <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">
-                Quiénes Somos
+                ¿Quiénes Somos?
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground font-serif">
                 Proyecto académico de periodismo
