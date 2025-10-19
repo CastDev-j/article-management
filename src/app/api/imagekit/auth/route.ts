@@ -22,6 +22,10 @@ export async function GET(request: Request) {
   const processInfo = `${process.pid}_${Math.random().toString(36).substring(2)}`;
   const requestId = crypto.randomBytes(12).toString('base64url');
   
+  // Añadir parámetro de request para más unicidad
+  const url = new URL(request.url);
+  const requestParam = url.searchParams.get('t') || 'no-param';
+  
   // Token ultra-único combinando múltiples fuentes de entropía
   const tokenParts = [
     timestamp.toString(36),
@@ -33,7 +37,9 @@ export async function GET(request: Request) {
     randomBytes3,
     processInfo,
     requestId,
-    Math.random().toString(36).substring(2)
+    requestParam.slice(-10), // Usar parte del parámetro de request
+    Math.random().toString(36).substring(2),
+    Date.now().toString(36) // Timestamp adicional justo antes de crear el token
   ];
   
   const token = tokenParts.join('_');
