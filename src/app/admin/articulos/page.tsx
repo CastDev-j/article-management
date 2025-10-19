@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getArticlesWithPagination } from "@/app/actions/articulos";
+import { getCategories } from "@/app/actions/categorias";
 import { Plus, Pencil } from "lucide-react";
+import { AdminArticleFilters } from "@/components/admin-article-filters";
 import { DeleteButton } from "@/components/delete-button";
 import { TogglePublishedButton } from "@/components/toggle-publicado-button";
 import type { Metadata } from "next";
@@ -25,7 +27,13 @@ export const metadata: Metadata = {
 export default async function AdminArticulosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ 
+    page?: string;
+    q?: string;
+    categorias?: string;
+    published?: string;
+    sort?: string;
+  }>;
 }) {
   const { userId } = await auth();
 
@@ -41,10 +49,19 @@ export default async function AdminArticulosPage({
 
   const params = await searchParams;
   const currentPage = parseInt(params.page || "1");
+  const searchQuery = params.q || "";
+  const publishedFilter = params.published || "all";
+  const sortBy = params.sort || "publishedAt-desc";
+
+  // Configurar filtros
+  const publishedBoolean = publishedFilter === "all" ? undefined : publishedFilter === "true";
 
   const { articles, totalPages, total } = await getArticlesWithPagination({
     page: currentPage,
     pageSize: 9,
+    search: searchQuery ? searchQuery : undefined,
+    published: publishedBoolean,
+    sort: sortBy,
   });
 
   return (
@@ -53,7 +70,8 @@ export default async function AdminArticulosPage({
         <div>
           <h1 className="text-4xl font-bold">Artículos del sitio</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {total} {total === 1 ? "artículo" : "artículos"} en total
+            {total} {total === 1 ? "artículo" : "artículos"}
+            {(searchQuery || publishedFilter !== "all") && " encontrados"}
           </p>
         </div>
         <Link href="/admin/articulos/nuevo">
@@ -64,35 +82,59 @@ export default async function AdminArticulosPage({
         </Link>
       </div>
 
+      <AdminArticleFilters
+        searchQuery={searchQuery}
+        publishedFilter={publishedFilter}
+        sortBy={sortBy}
+      />
+
       {articles.length === 0 ? (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border bg-muted/30 px-4 py-12 text-center">
           <div className="mb-6 rounded-full bg-muted p-6">
             <Plus className="h-12 w-12 text-muted-foreground" />
           </div>
           <h3 className="mb-2 text-xl font-semibold">
-            {total === 0
+            {total === 0 && !searchQuery && publishedFilter === "all"
               ? "No hay artículos creados"
+              : total === 0
+              ? "No se encontraron artículos con estos filtros"
               : "No se encontraron artículos en esta página"}
           </h3>
           <p className="mb-6 max-w-md text-pretty text-muted-foreground">
-            {total === 0
+            {total === 0 && !searchQuery && publishedFilter === "all"
               ? "Comienza a escribir tu primer artículo y compártelo con el mundo."
+              : total === 0
+              ? "Intenta cambiar los filtros de búsqueda o limpiarlos para ver más resultados."
               : currentPage > 1
               ? "Esta página no tiene artículos. Intenta volver a la primera página."
               : "No se encontraron resultados."}
           </p>
-          {total === 0 ? (
-            <Link href="/admin/articulos/nuevo">
-              <Button size="lg">
-                <Plus className="mr-2 h-4 w-4" />
-                Crear primer artículo
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/admin/articulos">
-              <Button size="lg">Volver a la primera página</Button>
-            </Link>
-          )}
+          <div className="flex gap-3">
+            {total === 0 && !searchQuery && publishedFilter === "all" ? (
+              <Link href="/admin/articulos/nuevo">
+                <Button size="lg">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Crear primer artículo
+                </Button>
+              </Link>
+            ) : total === 0 ? (
+              <>
+                <Link href="/admin/articulos">
+                  <Button size="lg">Limpiar filtros</Button>
+                </Link>
+                <Link href="/admin/articulos/nuevo">
+                  <Button size="lg" variant="outline">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nuevo artículo
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link href="/admin/articulos">
+                <Button size="lg">Volver a la primera página</Button>
+              </Link>
+            )}
+          </div>
         </div>
       ) : (
         <>

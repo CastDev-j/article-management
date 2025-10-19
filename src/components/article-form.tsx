@@ -48,18 +48,20 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     if (!date) return "";
     const d = new Date(date);
     if (isNaN(d.getTime())) return "";
-    return d.toISOString().split('T')[0];
+    return d.toISOString().split("T")[0];
   };
-  
-  const [publishedAt, setPublishedAt] = useState<string>("");
-  
+
+  const [publishedAt, setPublishedAt] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+
   // Update state when article changes (for edit mode)
   useEffect(() => {
     if (article?.publishedAt) {
       setPublishedAt(formatDateForInput(article.publishedAt));
     }
   }, [article?.publishedAt]);
-  
+
   // Update other states when article changes
   useEffect(() => {
     if (article) {
@@ -67,8 +69,12 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
       setDescripcion(article.descripcion || "");
       setContenido(article.contenido || "");
       setImagen(article.imagen || "");
-      setSelectedCategories(article.articuloCategorias.map((ac) => ac.categoria.id));
-      setAutors(article.autors && article.autors.length > 0 ? article.autors : [""]);
+      setSelectedCategories(
+        article.articuloCategorias.map((ac) => ac.categoria.id)
+      );
+      setAutors(
+        article.autors && article.autors.length > 0 ? article.autors : [""]
+      );
     }
   }, [article]);
 
@@ -178,7 +184,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 w-fit">
                   <Label>Fecha de publicación (opcional)</Label>
                   <div className="space-y-1">
                     <Input

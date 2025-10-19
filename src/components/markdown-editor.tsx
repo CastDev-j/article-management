@@ -35,10 +35,12 @@ import {
   Link,
   Loader2,
   Upload,
+  Play,
 } from "lucide-react";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Copy, Scissors, Clipboard } from "lucide-react";
 import { uploadImageToImageKit } from "@/lib/imagekit";
+import { isValidVideoUrl } from "@/lib/video-utils";
 
 interface MarkdownEditorProps {
   value: string;
@@ -61,6 +63,9 @@ export function MarkdownEditor({
   const [imageUrl, setImageUrl] = useState("");
   const [imageAltText, setImageAltText] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [showVideoDialog, setShowVideoDialog] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoTitle, setVideoTitle] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -145,6 +150,10 @@ export function MarkdownEditor({
     setShowImageDialog(true);
   };
 
+  const handleVideoInsert = () => {
+    setShowVideoDialog(true);
+  };
+
   const insertImageMarkdown = (url: string, altText: string = "") => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -164,6 +173,31 @@ export function MarkdownEditor({
     setTimeout(() => {
       textarea.focus();
       const newPos = start + imageMarkdown.length;
+      textarea.setSelectionRange(newPos, newPos);
+      setSelection({ start: newPos, end: newPos });
+    }, 0);
+  };
+
+  const insertVideoMarkdown = (url: string, title: string = "") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = selection.start;
+    // Usamos la misma sintaxis que las imágenes, pero ReactMarkdown lo detectará como video
+    const videoMarkdown = `![${title}](${url})`;
+    const before = value.substring(0, start);
+    const after = value.substring(start);
+    const newValue = before + videoMarkdown + after;
+
+    onChange(newValue);
+
+    setShowVideoDialog(false);
+    setVideoUrl("");
+    setVideoTitle("");
+
+    setTimeout(() => {
+      textarea.focus();
+      const newPos = start + videoMarkdown.length;
       textarea.setSelectionRange(newPos, newPos);
       setSelection({ start: newPos, end: newPos });
     }, 0);
@@ -331,6 +365,12 @@ export function MarkdownEditor({
       group: "insert",
     },
     {
+      icon: Play,
+      label: "Video",
+      action: handleVideoInsert,
+      group: "insert",
+    },
+    {
       icon: Minus,
       label: "Separador",
       action: () => insertText("\n\n---\n\n"),
@@ -421,13 +461,22 @@ export function MarkdownEditor({
               Cursiva
             </ContextMenuItem>
             <ContextMenuSeparator />
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>Multimedia</ContextMenuSubTrigger>
+              <ContextMenuSubContent className="w-44">
+                <ContextMenuItem onClick={toolbarButtons[9].action}>
+                  <ImageIcon className="mr-2 h-4 w-4" />
+                  Imagen
+                </ContextMenuItem>
+                <ContextMenuItem onClick={toolbarButtons[10].action}>
+                  <Play className="mr-2 h-4 w-4" />
+                  Video
+                </ContextMenuItem>
+              </ContextMenuSubContent>
+            </ContextMenuSub>
             <ContextMenuItem onClick={toolbarButtons[5].action}>
               <Link className="mr-2 h-4 w-4" />
               Enlace
-            </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[9].action}>
-              <ImageIcon className="mr-2 h-4 w-4" />
-              Imagen
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem onClick={toolbarButtons[6].action}>
@@ -443,7 +492,7 @@ export function MarkdownEditor({
               Cita
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[10].action}>
+            <ContextMenuItem onClick={toolbarButtons[11].action}>
               <Minus className="mr-2 h-4 w-4" />
               Separador
             </ContextMenuItem>
@@ -541,6 +590,70 @@ export function MarkdownEditor({
               className="w-full"
             >
               Insertar URL
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showVideoDialog} onOpenChange={setShowVideoDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insertar Video</DialogTitle>
+            <DialogDescription>
+              Ingresa una URL de YouTube o Facebook para insertar un video
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="video-title">
+                Título del Video (Descripción)
+              </Label>
+              <Input
+                id="video-title"
+                type="text"
+                placeholder="Descripción del video"
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="video-url">URL del Video</Label>
+              <Input
+                id="video-url"
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=... o https://www.facebook.com/..."
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && videoUrl.trim()) {
+                    e.preventDefault();
+                    if (isValidVideoUrl(videoUrl)) {
+                      insertVideoMarkdown(videoUrl, videoTitle);
+                    } else {
+                      alert("Por favor, ingresa una URL válida de YouTube o Facebook");
+                    }
+                  }
+                }}
+              />
+              {videoUrl && !isValidVideoUrl(videoUrl) && (
+                <p className="text-sm text-destructive">
+                  URL no válida. Soportamos YouTube y Facebook.
+                </p>
+              )}
+            </div>
+            <Button
+              type="button"
+              onClick={() => {
+                if (videoUrl.trim() && isValidVideoUrl(videoUrl)) {
+                  insertVideoMarkdown(videoUrl, videoTitle);
+                } else {
+                  alert("Por favor, ingresa una URL válida de YouTube o Facebook");
+                }
+              }}
+              disabled={!videoUrl.trim() || !isValidVideoUrl(videoUrl)}
+              className="w-full"
+            >
+              Insertar Video
             </Button>
           </div>
         </DialogContent>

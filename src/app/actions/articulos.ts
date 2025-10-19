@@ -160,11 +160,7 @@ export async function getArticles(options?: {
   }
 
   if (options?.search) {
-    where.OR = [
-      { titulo: { contains: options.search, mode: "insensitive" } },
-      { descripcion: { contains: options.search, mode: "insensitive" } },
-      { contenido: { contains: options.search, mode: "insensitive" } },
-    ];
+    where.titulo = { contains: options.search, mode: "insensitive" };
   }
 
   return prisma.articulo.findMany({
@@ -193,10 +189,40 @@ export async function getArticlesWithPagination(options?: {
   search?: string;
   page?: number;
   pageSize?: number;
+  sort?: string;
 }) {
   const page = options?.page || 1;
   const pageSize = options?.pageSize || 12;
   const skip = (page - 1) * pageSize;
+  const sortBy = options?.sort || "publishedAt-desc";
+  
+  // Determinar el ordenamiento
+  const getSortConfig = (sortBy: string) => {
+    switch (sortBy) {
+      case "publishedAt-desc":
+        return [{ publishedAt: "desc" as const }, { createdAt: "desc" as const }];
+      case "publishedAt-asc":
+        return [{ publishedAt: "asc" as const }, { createdAt: "asc" as const }];
+      case "createdAt-desc":
+        return { createdAt: "desc" as const };
+      case "createdAt-asc":
+        return { createdAt: "asc" as const };
+      case "updatedAt-desc":
+        return { updatedAt: "desc" as const };
+      case "updatedAt-asc":
+        return { updatedAt: "asc" as const };
+      case "titulo-asc":
+        return { titulo: "asc" as const };
+      case "titulo-desc":
+        return { titulo: "desc" as const };
+      case "publicado-desc":
+        return { publicado: "desc" as const };
+      case "publicado-asc":
+        return { publicado: "asc" as const };
+      default:
+        return [{ publishedAt: "desc" as const }, { createdAt: "desc" as const }];
+    }
+  };
 
   const where: any = {};
 
@@ -214,14 +240,15 @@ export async function getArticlesWithPagination(options?: {
     };
   }
 
-  if (options?.search) {
-    where.OR = [
-      { titulo: { contains: options.search, mode: "insensitive" } },
-      { descripcion: { contains: options.search, mode: "insensitive" } },
-      { contenido: { contains: options.search, mode: "insensitive" } },
-    ];
+  if (options?.search && options.search.trim() !== "") {
+    where.titulo = {
+      contains: options.search.trim(),
+      mode: "insensitive",
+    };
   }
 
+  const sortConfig = getSortConfig(sortBy);
+  
   const allArticles = await prisma.articulo.findMany({
     where,
     include: {
@@ -231,14 +258,7 @@ export async function getArticlesWithPagination(options?: {
         },
       },
     },
-    orderBy: [
-      {
-        publishedAt: "desc",
-      },
-      {
-        createdAt: "desc",
-      },
-    ],
+    orderBy: sortConfig,
   });
 
   const total = allArticles.length;

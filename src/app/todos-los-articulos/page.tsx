@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Search, X } from "lucide-react";
+import { SortNavigation } from "@/components/sort-navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,18 +22,43 @@ const ARTICLES_PER_PAGE = 9;
 export default async function TodosLosArticulosPage({
   searchParams,
 }: {
-  searchParams: { q?: string; categorias?: string; page?: string };
+  searchParams: { q?: string; categorias?: string; page?: string; sort?: string };
 }) {
   const searchQuery = searchParams.q || "";
   const categoriesParam = searchParams.categorias || "";
   const categorySlugs = categoriesParam ? categoriesParam.split(",") : [];
   const currentPage = parseInt(searchParams.page || "1", 10);
+  const sortBy = searchParams.sort || "publishedAt-desc";
 
   const allCategories = await prisma.categoria.findMany({
     orderBy: {
       nombre: "asc",
     },
   });
+
+  // Determinar el ordenamiento
+  const getSortConfig = (sortBy: string) => {
+    switch (sortBy) {
+      case "publishedAt-desc":
+        return [{ publishedAt: "desc" as const }, { createdAt: "desc" as const }];
+      case "publishedAt-asc":
+        return [{ publishedAt: "asc" as const }, { createdAt: "asc" as const }];
+      case "createdAt-desc":
+        return { createdAt: "desc" as const };
+      case "createdAt-asc":
+        return { createdAt: "asc" as const };
+      case "updatedAt-desc":
+        return { updatedAt: "desc" as const };
+      case "updatedAt-asc":
+        return { updatedAt: "asc" as const };
+      case "titulo-asc":
+        return { titulo: "asc" as const };
+      case "titulo-desc":
+        return { titulo: "desc" as const };
+      default:
+        return [{ publishedAt: "desc" as const }, { createdAt: "desc" as const }];
+    }
+  };
 
   const allArticles = await prisma.articulo.findMany({
     where: {
@@ -45,9 +71,7 @@ export default async function TodosLosArticulosPage({
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: getSortConfig(sortBy),
   });
 
   let filteredArticles = allArticles;
@@ -81,13 +105,16 @@ export default async function TodosLosArticulosPage({
     categorySlugs.includes(c.slug)
   );
 
-  const buildFilterUrl = (newCategories: string[], newSearch?: string) => {
+  const buildFilterUrl = (newCategories: string[], newSearch?: string, newSort?: string) => {
     const params = new URLSearchParams();
     if (newCategories.length > 0) {
       params.set("categorias", newCategories.join(","));
     }
     if (newSearch !== undefined ? newSearch : searchQuery) {
       params.set("q", newSearch !== undefined ? newSearch : searchQuery);
+    }
+    if (newSort !== undefined ? newSort : sortBy) {
+      params.set("sort", newSort !== undefined ? newSort : sortBy);
     }
     return `/todos-los-articulos${
       params.toString() ? `?${params.toString()}` : ""
@@ -112,6 +139,7 @@ export default async function TodosLosArticulosPage({
 
           <form action="/todos-los-articulos" method="get" className="mb-0">
             <input type="hidden" name="categorias" value={categoriesParam} />
+            <input type="hidden" name="sort" value={sortBy} />
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -132,9 +160,18 @@ export default async function TodosLosArticulosPage({
 
         <div className="mb-6 md:mb-8 rounded-lg p-4 md:p-6 bg-muted/30">
           <div className="mb-3 md:mb-4">
-            <h2 className="text-sm font-semibold mb-2 md:mb-3">
-              Filtrar por categoría:
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-sm font-semibold mb-2 md:mb-3">
+                  Filtrar por categoría:
+                </h2>
+              </div>
+              <SortNavigation
+                value={sortBy}
+                categorySlugs={categorySlugs}
+                searchQuery={searchQuery}
+              />
+            </div>
             <div className="flex flex-wrap gap-1.5 md:gap-2">
               {allCategories.map((category) => (
                 <Link key={category.id} href={toggleCategory(category.slug)}>
@@ -309,7 +346,9 @@ export default async function TodosLosArticulosPage({
               <Link
                 href={`/todos-los-articulos?page=${currentPage - 1}${
                   categoriesParam ? `&categorias=${categoriesParam}` : ""
-                }${searchQuery ? `&q=${searchQuery}` : ""}`}
+                }${searchQuery ? `&q=${searchQuery}` : ""}${
+                  sortBy !== "publishedAt-desc" ? `&sort=${sortBy}` : ""
+                }`}
               >
                 <Button variant="outline">Anterior</Button>
               </Link>
@@ -321,7 +360,9 @@ export default async function TodosLosArticulosPage({
                     key={page}
                     href={`/todos-los-articulos?page=${page}${
                       categoriesParam ? `&categorias=${categoriesParam}` : ""
-                    }${searchQuery ? `&q=${searchQuery}` : ""}`}
+                    }${searchQuery ? `&q=${searchQuery}` : ""}${
+                      sortBy !== "publishedAt-desc" ? `&sort=${sortBy}` : ""
+                    }`}
                   >
                     <Button
                       variant={page === currentPage ? "default" : "outline"}
@@ -337,7 +378,9 @@ export default async function TodosLosArticulosPage({
               <Link
                 href={`/todos-los-articulos?page=${currentPage + 1}${
                   categoriesParam ? `&categorias=${categoriesParam}` : ""
-                }${searchQuery ? `&q=${searchQuery}` : ""}`}
+                }${searchQuery ? `&q=${searchQuery}` : ""}${
+                  sortBy !== "publishedAt-desc" ? `&sort=${sortBy}` : ""
+                }`}
               >
                 <Button variant="outline">Siguiente</Button>
               </Link>

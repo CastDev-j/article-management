@@ -17,6 +17,7 @@ import ReactMarkdown from "react-markdown";
 import { PublicHeader } from "@/components/public-header";
 import { auth } from "@clerk/nextjs/server";
 import { checkIsAdmin } from "@/app/actions/auth";
+import { MarkdownVideo } from "@/components/video-embed";
 
 export async function generateMetadata({
   params,
@@ -284,20 +285,7 @@ export default async function ArticuloPage({
                     {...props}
                   />
                 ),
-                img: ({ node, ...props }) => (
-                  <span className="my-8 block max-w-full">
-                    <img
-                      {...props}
-                      className="w-full max-w-full h-auto rounded-lg border-2 border-border"
-                      loading="lazy"
-                    />
-                    {props.alt && (
-                      <span className="mt-2 block text-center font-sans text-sm italic text-muted-foreground break-words">
-                        {props.alt}
-                      </span>
-                    )}
-                  </span>
-                ),
+                img: (props) => <MarkdownVideo {...props} />,
               }}
             >
               {article.contenido}

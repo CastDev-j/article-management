@@ -1,25 +1,12 @@
-/*
-  Lightweight Prisma-compatible shim backed by Neon's serverless driver for NeonDB.
-  This implements the minimal subset of `prisma` APIs used in the app:
-  - prisma.articulo.findUnique/findMany/create/update/delete
-  - prisma.categoria.findUnique/findMany/create/update/delete
-  - prisma.articuloCategoria.count
-
-  It's intentionally small and uses raw SQL; for complex queries you can
-  expand these helpers or reintroduce Prisma later.
-*/
-
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL not set");
 
-// Create a serverless connection using Neon's driver
 const sql = neon(connectionString);
 
 async function query(sqlQuery: string, params: any[] = []) {
   try {
-    // Use sql.query for parameterized queries with Neon serverless
     const res = await sql.query(sqlQuery, params);
     return { rows: res };
   } catch (error) {
@@ -75,7 +62,6 @@ export const prisma = {
 
       if (!articulo) return null;
 
-      // Handle include relations
       if (include?.articuloCategorias) {
         const acRes = await query(
           `SELECT ac.id, ac.articulo_id, ac.categoria_id, c.id as cat_id, c.nombre, c.slug, c.created_at as cat_created_at, c.updated_at as cat_updated_at
@@ -113,13 +99,11 @@ export const prisma = {
         }
       }
 
-      // category filter (joins)
       if (
         opts.where &&
         opts.where.articuloCategorias &&
         opts.where.articuloCategorias.some
       ) {
-        // Only support slug filter used in the app
         const slug = opts.where.articuloCategorias.some.categoria.slug;
         const res = await query(
           `SELECT a.* FROM articulos a JOIN articulo_categorias ac ON ac.articulo_id = a.id JOIN categorias c ON c.id = ac.categoria_id WHERE c.slug = $1 ORDER BY a.created_at DESC`,
@@ -127,7 +111,6 @@ export const prisma = {
         );
         const articulos = res.rows.map(mapRowToArticulo);
 
-        // Add relations if include is specified
         if (opts.include?.articuloCategorias) {
           for (const articulo of articulos) {
             const acRes = await query(
@@ -161,14 +144,46 @@ export const prisma = {
       const whereSql = whereClauses.length
         ? "WHERE " + whereClauses.join(" AND ")
         : "";
-      const orderBy = opts.orderBy ? "ORDER BY COALESCE(published_at, created_at) DESC" : "ORDER BY COALESCE(published_at, created_at) DESC";
+      let orderBy = "ORDER BY COALESCE(published_at, created_at) DESC";
+      
+      if (opts.orderBy) {
+        const orderClauses: string[] = [];
+        
+        if (Array.isArray(opts.orderBy)) {
+          for (const order of opts.orderBy) {
+            if (order.publishedAt) {
+              orderClauses.push(`COALESCE(published_at, created_at) ${order.publishedAt.toUpperCase()}`);
+            } else if (order.createdAt) {
+              orderClauses.push(`created_at ${order.createdAt.toUpperCase()}`);
+            } else if (order.updatedAt) {
+              orderClauses.push(`updated_at ${order.updatedAt.toUpperCase()}`);
+            } else if (order.titulo) {
+              orderClauses.push(`titulo ${order.titulo.toUpperCase()}`);
+            }
+          }
+        } else {
+          // Handle single orderBy object
+          if (opts.orderBy.publishedAt) {
+            orderClauses.push(`COALESCE(published_at, created_at) ${opts.orderBy.publishedAt.toUpperCase()}`);
+          } else if (opts.orderBy.createdAt) {
+            orderClauses.push(`created_at ${opts.orderBy.createdAt.toUpperCase()}`);
+          } else if (opts.orderBy.updatedAt) {
+            orderClauses.push(`updated_at ${opts.orderBy.updatedAt.toUpperCase()}`);
+          } else if (opts.orderBy.titulo) {
+            orderClauses.push(`titulo ${opts.orderBy.titulo.toUpperCase()}`);
+          }
+        }
+        
+        if (orderClauses.length > 0) {
+          orderBy = `ORDER BY ${orderClauses.join(", ")}`;
+        }
+      }
       const res = await query(
         `SELECT * FROM articulos ${whereSql} ${orderBy}`,
         params
       );
       const articulos = res.rows.map(mapRowToArticulo);
 
-      // Add relations if include is specified
       if (opts.include?.articuloCategorias) {
         for (const articulo of articulos) {
           const acRes = await query(
@@ -216,7 +231,6 @@ export const prisma = {
         ]
       );
 
-      // handle articuloCategorias creation
       if (data.articuloCategorias && data.articuloCategorias.create) {
         for (const ac of data.articuloCategorias.create) {
           await query(
@@ -250,14 +264,14 @@ export const prisma = {
         }
       }
 
-      // Handle publishedAt separately
       if ("publishedAt" in data) {
         fields.push(`published_at = $${idx++}`);
-        const publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
+        const publishedAt = data.publishedAt
+          ? new Date(data.publishedAt)
+          : null;
         params.push(publishedAt);
       }
 
-      // Handle autors separately since it needs JSON stringification
       if ("autors" in data) {
         fields.push(`autors = $${idx++}`);
         params.push(JSON.stringify(data.autors || ["Anónimo"]));
@@ -269,7 +283,6 @@ export const prisma = {
       )}, updated_at = NOW() WHERE id = $${idx} RETURNING *`;
       const res = await query(sql, params);
 
-      // handle articuloCategorias replace
       if (
         data.articuloCategorias &&
         data.articuloCategorias.deleteMany !== undefined
