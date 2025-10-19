@@ -1,7 +1,7 @@
 /*
   NeonDB Database Layer
   
-  Lightweight database abstraction using `pg` (node-postgres) for direct connection to NeonDB.
+  Lightweight database abstraction using Neon's serverless driver optimized for Next.js.
   Provides a Prisma-like API for convenience but uses raw SQL queries.
   
   Implements:
@@ -12,20 +12,21 @@
   The `prisma` export name is kept for backward compatibility but this is NOT Prisma ORM.
 */
 
-import { Pool } from "pg";
+import { neon } from '@neondatabase/serverless';
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL not set");
 
-const pool = new Pool({ connectionString });
+// Create a serverless connection using Neon's driver
+const sql = neon(connectionString);
 
-async function query(sql: string, params: any[] = []) {
-  const client = await pool.connect();
+async function query(sqlQuery: string, params: any[] = []) {
   try {
-    const res = await client.query(sql, params);
-    return res;
-  } finally {
-    client.release();
+    // Use sql.query for parameterized queries with Neon serverless
+    const res = await sql.query(sqlQuery, params);
+    return { rows: res };
+  } catch (error) {
+    throw error;
   }
 }
 

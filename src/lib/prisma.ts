@@ -1,5 +1,5 @@
 /*
-  Lightweight Prisma-compatible shim backed by `pg` for NeonDB.
+  Lightweight Prisma-compatible shim backed by Neon's serverless driver for NeonDB.
   This implements the minimal subset of `prisma` APIs used in the app:
   - prisma.articulo.findUnique/findMany/create/update/delete
   - prisma.categoria.findUnique/findMany/create/update/delete
@@ -9,20 +9,21 @@
   expand these helpers or reintroduce Prisma later.
 */
 
-import { Pool } from "pg";
+import { neon } from '@neondatabase/serverless';
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL not set");
 
-const pool = new Pool({ connectionString });
+// Create a serverless connection using Neon's driver
+const sql = neon(connectionString);
 
-async function query(sql: string, params: any[] = []) {
-  const client = await pool.connect();
+async function query(sqlQuery: string, params: any[] = []) {
   try {
-    const res = await client.query(sql, params);
-    return res;
-  } finally {
-    client.release();
+    // Use sql.query for parameterized queries with Neon serverless
+    const res = await sql.query(sqlQuery, params);
+    return { rows: res };
+  } catch (error) {
+    throw error;
   }
 }
 
