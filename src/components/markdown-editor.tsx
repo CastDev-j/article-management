@@ -323,6 +323,27 @@ export function MarkdownEditor({
       
       if (result.success) {
         onChange(result.formattedContent);
+        
+        // Force textarea focus and trigger change events to ensure form detects the change
+        setTimeout(() => {
+          const textarea = textareaRef.current;
+          const hiddenInput = document.querySelector(`input[name="${name}"]`) as HTMLInputElement;
+          
+          if (textarea) {
+            textarea.focus();
+            // Trigger input and change events on textarea
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+            const changeEvent = new Event('change', { bubbles: true });
+            textarea.dispatchEvent(changeEvent);
+          }
+          
+          if (hiddenInput) {
+            // Trigger change event on hidden input to ensure form state updates
+            const hiddenEvent = new Event('change', { bubbles: true });
+            hiddenInput.dispatchEvent(hiddenEvent);
+          }
+        }, 100);
       } else {
         alert(result.error || "Error al formatear con IA");
       }
