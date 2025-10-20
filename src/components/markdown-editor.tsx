@@ -36,11 +36,13 @@ import {
   Loader2,
   Upload,
   Play,
+  Sparkles,
 } from "lucide-react";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Copy, Scissors, Clipboard } from "lucide-react";
 import { uploadImageToImageKit } from "@/lib/imagekit";
 import { isValidVideoUrl } from "@/lib/video-utils";
+import { geminiAI } from "@/lib/gemini-ai";
 
 interface MarkdownEditorProps {
   value: string;
@@ -67,6 +69,7 @@ export function MarkdownEditor({
   const [videoUrl, setVideoUrl] = useState("");
   const [videoTitle, setVideoTitle] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [isFormattingWithAI, setIsFormattingWithAI] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -302,6 +305,35 @@ export function MarkdownEditor({
     }
   };
 
+  const handleFormatWithAI = async () => {
+    if (!value.trim()) {
+      alert("No hay contenido para formatear");
+      return;
+    }
+
+    if (!geminiAI.isConfigured()) {
+      alert("La IA no está configurada. Verifica que la variable GEMINI_API_KEY esté disponible.");
+      return;
+    }
+
+    setIsFormattingWithAI(true);
+    
+    try {
+      const result = await geminiAI.formatContent(value);
+      
+      if (result.success) {
+        onChange(result.formattedContent);
+      } else {
+        alert(result.error || "Error al formatear con IA");
+      }
+    } catch (error) {
+      console.error("Error formatting with AI:", error);
+      alert("Error inesperado al formatear con IA");
+    } finally {
+      setIsFormattingWithAI(false);
+    }
+  };
+
   const toolbarButtons = [
     {
       icon: Heading1,
@@ -375,6 +407,13 @@ export function MarkdownEditor({
       action: () => insertText("\n\n---\n\n"),
       group: "insert",
     },
+    {
+      icon: Sparkles,
+      label: "Formatear con IA",
+      action: handleFormatWithAI,
+      group: "ai",
+      disabled: isFormattingWithAI,
+    },
   ];
 
   return (
@@ -389,20 +428,33 @@ export function MarkdownEditor({
               {isNewGroup && <div className="mx-1 h-6 w-px bg-border" />}
               <Button
                 type="button"
-                variant="ghost"
+                variant={button.group === "ai" ? "outline" : "ghost"}
                 size="sm"
                 onClick={button.action}
                 title={button.label}
-                className="h-8 w-8 p-0 hover:bg-accent hover:text-accent-foreground"
+                disabled={button.disabled || isFormattingWithAI}
+                className={`h-8 ${button.group === "ai" ? "px-3" : "w-8 p-0"} hover:bg-accent hover:text-accent-foreground ${isFormattingWithAI && button.group !== "ai" ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <button.icon className="h-4 w-4" />
+                {button.disabled && button.group === "ai" ? (
+                  <>
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    <span className="text-xs">Formateando...</span>
+                  </>
+                ) : (
+                  <>
+                    <button.icon className="h-4 w-4" />
+                    {button.group === "ai" && !button.disabled && (
+                      <span className="ml-1 text-xs">Formatear con IA</span>
+                    )}
+                  </>
+                )}
               </Button>
             </div>
           );
         })}
       </div>
       <ContextMenu>
-        <ContextMenuTrigger disabled={isMobile}>
+        <ContextMenuTrigger disabled={isMobile || isFormattingWithAI}>
           <Textarea
             ref={textareaRef}
             value={value}
@@ -410,7 +462,8 @@ export function MarkdownEditor({
             onSelect={handleTextareaSelect}
             placeholder={placeholder}
             rows={rows}
-            className="font-mono text-sm resize-none"
+            disabled={isFormattingWithAI}
+            className={`font-mono text-sm resize-none ${isFormattingWithAI ? 'opacity-60 cursor-not-allowed' : ''}`}
             style={{
               tabSize: 2,
               lineHeight: 1.6,
@@ -420,42 +473,42 @@ export function MarkdownEditor({
         {!isMobile && (
           <ContextMenuContent className="w-56">
             {/* Clipboard actions */}
-            <ContextMenuItem onClick={copySelection}>
+            <ContextMenuItem onClick={copySelection} disabled={isFormattingWithAI}>
               <Copy className="mr-2 h-4 w-4" />
               Copiar
             </ContextMenuItem>
-            <ContextMenuItem onClick={cutSelection}>
+            <ContextMenuItem onClick={cutSelection} disabled={isFormattingWithAI}>
               <Scissors className="mr-2 h-4 w-4" />
               Cortar
             </ContextMenuItem>
-            <ContextMenuItem onClick={pasteAtCursor}>
+            <ContextMenuItem onClick={pasteAtCursor} disabled={isFormattingWithAI}>
               <Clipboard className="mr-2 h-4 w-4" />
               Pegar
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuSub>
-              <ContextMenuSubTrigger>Encabezados</ContextMenuSubTrigger>
+              <ContextMenuSubTrigger disabled={isFormattingWithAI}>Encabezados</ContextMenuSubTrigger>
               <ContextMenuSubContent className="w-44">
-                <ContextMenuItem onClick={toolbarButtons[0].action}>
+                <ContextMenuItem onClick={toolbarButtons[0].action} disabled={isFormattingWithAI}>
                   <Heading1 className="mr-2 h-4 w-4" />
                   Título H1
                 </ContextMenuItem>
-                <ContextMenuItem onClick={toolbarButtons[1].action}>
+                <ContextMenuItem onClick={toolbarButtons[1].action} disabled={isFormattingWithAI}>
                   <Heading2 className="mr-2 h-4 w-4" />
                   Título H2
                 </ContextMenuItem>
-                <ContextMenuItem onClick={toolbarButtons[2].action}>
+                <ContextMenuItem onClick={toolbarButtons[2].action} disabled={isFormattingWithAI}>
                   <Heading3 className="mr-2 h-4 w-4" />
                   Título H3
                 </ContextMenuItem>
               </ContextMenuSubContent>
             </ContextMenuSub>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[3].action}>
+            <ContextMenuItem onClick={toolbarButtons[3].action} disabled={isFormattingWithAI}>
               <Bold className="mr-2 h-4 w-4" />
               Negrita
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[4].action}>
+            <ContextMenuItem onClick={toolbarButtons[4].action} disabled={isFormattingWithAI}>
               <Italic className="mr-2 h-4 w-4" />
               Cursiva
             </ContextMenuItem>
@@ -473,25 +526,25 @@ export function MarkdownEditor({
                 </ContextMenuItem>
               </ContextMenuSubContent>
             </ContextMenuSub> */}
-            <ContextMenuItem onClick={toolbarButtons[5].action}>
+            <ContextMenuItem onClick={toolbarButtons[5].action} disabled={isFormattingWithAI}>
               <Link className="mr-2 h-4 w-4" />
               Enlace
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[6].action}>
+            <ContextMenuItem onClick={toolbarButtons[6].action} disabled={isFormattingWithAI}>
               <List className="mr-2 h-4 w-4" />
               Lista
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[7].action}>
+            <ContextMenuItem onClick={toolbarButtons[7].action} disabled={isFormattingWithAI}>
               <ListOrdered className="mr-2 h-4 w-4" />
               Lista numerada
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[8].action}>
+            <ContextMenuItem onClick={toolbarButtons[8].action} disabled={isFormattingWithAI}>
               <Quote className="mr-2 h-4 w-4" />
               Cita
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[11].action}>
+            <ContextMenuItem onClick={toolbarButtons[11].action} disabled={isFormattingWithAI}>
               <Minus className="mr-2 h-4 w-4" />
               Separador
             </ContextMenuItem>
