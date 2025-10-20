@@ -170,7 +170,7 @@ export function MarkdownVideo({ node, ...props }: any) {
         />
         {alt && (
           <span
-            className="block text-center text-sm text-white"
+            className="block text-center text-sm text-muted-foreground"
             style={{ marginTop: "-1rem", marginBottom: "1.5rem" }}
           >
             <em>{alt}</em>
@@ -280,6 +280,15 @@ function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
       style={{ margin: "1rem 0", marginTop: "1.5rem", marginBottom: "1.5rem" }}
     >
       {videoContent}
+
+      {title && (
+        <span
+          className="block text-center text-sm text-muted-foreground"
+          style={{ marginTop: "-1rem", marginBottom: "1.5rem" }}
+        >
+          <em>{title}</em>
+        </span>
+      )}
     </span>
   );
 }
