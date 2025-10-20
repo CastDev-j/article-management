@@ -7,10 +7,12 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface FeaturedArticle {
   id: string;
@@ -34,8 +36,39 @@ interface FeaturedCarouselProps {
 }
 
 export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const autoScrollInterval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+
+    const carouselElement = api.rootNode();
+    const handleMouseEnter = () => clearInterval(autoScrollInterval);
+    const handleMouseLeave = () => {
+      const newInterval = setInterval(() => {
+        api.scrollNext();
+      }, 4000);
+      return newInterval;
+    };
+
+    carouselElement.addEventListener("mouseenter", handleMouseEnter);
+    carouselElement.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      clearInterval(autoScrollInterval);
+      carouselElement.removeEventListener("mouseenter", handleMouseEnter);
+      carouselElement.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [api]);
+
   return (
     <Carousel
+      setApi={setApi}
       opts={{
         align: "start",
         loop: true,
@@ -94,14 +127,13 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
                       <div className="flex items-center gap-1 md:gap-1.5">
                         <Calendar className="h-3 w-3 md:h-4 md:w-4" />
                         <time>
-                          {new Date(article.publishedAt || article.createdAt).toLocaleDateString(
-                            "es-ES",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )}
+                          {new Date(
+                            article.publishedAt || article.createdAt
+                          ).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
                         </time>
                       </div>
                     </div>
