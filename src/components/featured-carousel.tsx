@@ -37,30 +37,35 @@ interface FeaturedCarouselProps {
 
 export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
   const [api, setApi] = useState<CarouselApi>();
+  const [isHovered, setIsHovered] = useState(false);
 
+  // Auto-scroll effect
+  useEffect(() => {
+    if (!api || isHovered) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [api, isHovered]);
+
+  // Mouse events effect
   useEffect(() => {
     if (!api) {
       return;
     }
 
-    const autoScrollInterval = setInterval(() => {
-      api.scrollNext();
-    }, 4000);
-
     const carouselElement = api.rootNode();
-    const handleMouseEnter = () => clearInterval(autoScrollInterval);
-    const handleMouseLeave = () => {
-      const newInterval = setInterval(() => {
-        api.scrollNext();
-      }, 4000);
-      return newInterval;
-    };
+    const handleMouseEnter = () => setIsHovered(true);
+    const handleMouseLeave = () => setIsHovered(false);
 
     carouselElement.addEventListener("mouseenter", handleMouseEnter);
     carouselElement.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      clearInterval(autoScrollInterval);
       carouselElement.removeEventListener("mouseenter", handleMouseEnter);
       carouselElement.removeEventListener("mouseleave", handleMouseLeave);
     };
