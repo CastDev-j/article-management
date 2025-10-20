@@ -217,7 +217,6 @@ export function MarkdownEditor({
     try {
       setUploadingImage(true);
 
-      // Verificar que la función existe
       if (typeof uploadImageToImageKit !== "function") {
         throw new Error("uploadImageToImageKit no está disponible");
       }
@@ -233,12 +232,10 @@ export function MarkdownEditor({
       );
     } finally {
       setUploadingImage(false);
-      // Resetear el input file
       e.target.value = "";
     }
   };
 
-  // Clipboard helpers
   const copySelection = async () => {
     try {
       const textarea = textareaRef.current;
@@ -248,7 +245,6 @@ export function MarkdownEditor({
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);
       } else {
-        // Fallback: crear textarea temporal
         const el = document.createElement("textarea");
         el.value = text;
         document.body.appendChild(el);
@@ -268,7 +264,6 @@ export function MarkdownEditor({
       const end = textarea ? textarea.selectionEnd : selection.end;
 
       await copySelection();
-      // eliminar selección del textarea
       const before = value.substring(0, start);
       const after = value.substring(end);
       const newValue = before + after;
@@ -291,7 +286,6 @@ export function MarkdownEditor({
       if (navigator.clipboard && navigator.clipboard.readText) {
         pasteText = await navigator.clipboard.readText();
       } else {
-        // No hay fallback fiable para leer en todos los navegadores sin permisos
         alert("Tu navegador no soporta lectura del portapapeles desde la web.");
         return;
       }
@@ -312,35 +306,36 @@ export function MarkdownEditor({
     }
 
     if (!geminiAI.isConfigured()) {
-      alert("La IA no está configurada. Verifica que la variable GEMINI_API_KEY esté disponible.");
+      alert(
+        "La IA no está configurada. Verifica que la variable GEMINI_API_KEY esté disponible."
+      );
       return;
     }
 
     setIsFormattingWithAI(true);
-    
+
     try {
       const result = await geminiAI.formatContent(value);
-      
+
       if (result.success) {
-        onChange(result.formattedContent);
-        
-        // Force textarea focus and trigger change events to ensure form detects the change
+        onChange("" + result.formattedContent + " ");
+
         setTimeout(() => {
           const textarea = textareaRef.current;
-          const hiddenInput = document.querySelector(`input[name="${name}"]`) as HTMLInputElement;
-          
+          const hiddenInput = document.querySelector(
+            `input[name="${name}"]`
+          ) as HTMLInputElement;
+
           if (textarea) {
             textarea.focus();
-            // Trigger input and change events on textarea
-            const event = new Event('input', { bubbles: true });
+            const event = new Event("input", { bubbles: true });
             textarea.dispatchEvent(event);
-            const changeEvent = new Event('change', { bubbles: true });
+            const changeEvent = new Event("change", { bubbles: true });
             textarea.dispatchEvent(changeEvent);
           }
-          
+
           if (hiddenInput) {
-            // Trigger change event on hidden input to ensure form state updates
-            const hiddenEvent = new Event('change', { bubbles: true });
+            const hiddenEvent = new Event("change", { bubbles: true });
             hiddenInput.dispatchEvent(hiddenEvent);
           }
         }, 100);
@@ -454,7 +449,13 @@ export function MarkdownEditor({
                 onClick={button.action}
                 title={button.label}
                 disabled={button.disabled || isFormattingWithAI}
-                className={`h-8 ${button.group === "ai" ? "px-3" : "w-8 p-0"} hover:bg-accent hover:text-accent-foreground ${isFormattingWithAI && button.group !== "ai" ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`h-8 ${
+                  button.group === "ai" ? "px-3" : "w-8 p-0"
+                } hover:bg-accent hover:text-accent-foreground ${
+                  isFormattingWithAI && button.group !== "ai"
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
               >
                 {button.disabled && button.group === "ai" ? (
                   <>
@@ -484,7 +485,9 @@ export function MarkdownEditor({
             placeholder={placeholder}
             rows={rows}
             disabled={isFormattingWithAI}
-            className={`font-mono text-sm resize-none ${isFormattingWithAI ? 'opacity-60 cursor-not-allowed' : ''}`}
+            className={`font-mono text-sm resize-none ${
+              isFormattingWithAI ? "opacity-60 cursor-not-allowed" : ""
+            }`}
             style={{
               tabSize: 2,
               lineHeight: 1.6,
@@ -494,42 +497,68 @@ export function MarkdownEditor({
         {!isMobile && (
           <ContextMenuContent className="w-56">
             {/* Clipboard actions */}
-            <ContextMenuItem onClick={copySelection} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={copySelection}
+              disabled={isFormattingWithAI}
+            >
               <Copy className="mr-2 h-4 w-4" />
               Copiar
             </ContextMenuItem>
-            <ContextMenuItem onClick={cutSelection} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={cutSelection}
+              disabled={isFormattingWithAI}
+            >
               <Scissors className="mr-2 h-4 w-4" />
               Cortar
             </ContextMenuItem>
-            <ContextMenuItem onClick={pasteAtCursor} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={pasteAtCursor}
+              disabled={isFormattingWithAI}
+            >
               <Clipboard className="mr-2 h-4 w-4" />
               Pegar
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuSub>
-              <ContextMenuSubTrigger disabled={isFormattingWithAI}>Encabezados</ContextMenuSubTrigger>
+              <ContextMenuSubTrigger disabled={isFormattingWithAI}>
+                Encabezados
+              </ContextMenuSubTrigger>
               <ContextMenuSubContent className="w-44">
-                <ContextMenuItem onClick={toolbarButtons[0].action} disabled={isFormattingWithAI}>
+                <ContextMenuItem
+                  onClick={toolbarButtons[0].action}
+                  disabled={isFormattingWithAI}
+                >
                   <Heading1 className="mr-2 h-4 w-4" />
                   Título H1
                 </ContextMenuItem>
-                <ContextMenuItem onClick={toolbarButtons[1].action} disabled={isFormattingWithAI}>
+                <ContextMenuItem
+                  onClick={toolbarButtons[1].action}
+                  disabled={isFormattingWithAI}
+                >
                   <Heading2 className="mr-2 h-4 w-4" />
                   Título H2
                 </ContextMenuItem>
-                <ContextMenuItem onClick={toolbarButtons[2].action} disabled={isFormattingWithAI}>
+                <ContextMenuItem
+                  onClick={toolbarButtons[2].action}
+                  disabled={isFormattingWithAI}
+                >
                   <Heading3 className="mr-2 h-4 w-4" />
                   Título H3
                 </ContextMenuItem>
               </ContextMenuSubContent>
             </ContextMenuSub>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[3].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[3].action}
+              disabled={isFormattingWithAI}
+            >
               <Bold className="mr-2 h-4 w-4" />
               Negrita
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[4].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[4].action}
+              disabled={isFormattingWithAI}
+            >
               <Italic className="mr-2 h-4 w-4" />
               Cursiva
             </ContextMenuItem>
@@ -547,25 +576,40 @@ export function MarkdownEditor({
                 </ContextMenuItem>
               </ContextMenuSubContent>
             </ContextMenuSub> */}
-            <ContextMenuItem onClick={toolbarButtons[5].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[5].action}
+              disabled={isFormattingWithAI}
+            >
               <Link className="mr-2 h-4 w-4" />
               Enlace
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[6].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[6].action}
+              disabled={isFormattingWithAI}
+            >
               <List className="mr-2 h-4 w-4" />
               Lista
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[7].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[7].action}
+              disabled={isFormattingWithAI}
+            >
               <ListOrdered className="mr-2 h-4 w-4" />
               Lista numerada
             </ContextMenuItem>
-            <ContextMenuItem onClick={toolbarButtons[8].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[8].action}
+              disabled={isFormattingWithAI}
+            >
               <Quote className="mr-2 h-4 w-4" />
               Cita
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={toolbarButtons[11].action} disabled={isFormattingWithAI}>
+            <ContextMenuItem
+              onClick={toolbarButtons[11].action}
+              disabled={isFormattingWithAI}
+            >
               <Minus className="mr-2 h-4 w-4" />
               Separador
             </ContextMenuItem>
