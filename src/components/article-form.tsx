@@ -44,7 +44,6 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   const [descripcion, setDescripcion] = useState("");
   const [contenido, setContenido] = useState("");
   const [imagen, setImagen] = useState("");
-  // Helper function to convert date to YYYY-MM-DD format
   const formatDateForInput = (date: Date | string | null) => {
     if (!date) return "";
     const d = new Date(date);
@@ -56,14 +55,12 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     new Date().toISOString().split("T")[0]
   );
 
-  // Update state when article changes (for edit mode)
   useEffect(() => {
     if (article?.publishedAt) {
       setPublishedAt(formatDateForInput(article.publishedAt));
     }
   }, [article?.publishedAt]);
 
-  // Update other states when article changes
   useEffect(() => {
     if (article) {
       setTitulo(article.titulo || "");

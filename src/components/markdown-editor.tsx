@@ -599,7 +599,7 @@ export function MarkdownEditor({
           <DialogHeader>
             <DialogTitle>Insertar Video</DialogTitle>
             <DialogDescription>
-              Ingresa una URL de YouTube o Facebook para insertar un video
+              Ingresa una URL de YouTube para insertar un video
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -620,7 +620,7 @@ export function MarkdownEditor({
               <Input
                 id="video-url"
                 type="url"
-                placeholder="https://www.youtube.com/watch?v=... o https://www.facebook.com/..."
+                placeholder="https://www.youtube.com/watch?v=..."
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
                 onKeyDown={(e) => {
@@ -629,16 +629,14 @@ export function MarkdownEditor({
                     if (isValidVideoUrl(videoUrl)) {
                       insertVideoMarkdown(videoUrl, videoTitle);
                     } else {
-                      alert(
-                        "Por favor, ingresa una URL válida de YouTube o Facebook"
-                      );
+                      alert("Por favor, ingresa una URL válida de YouTube");
                     }
                   }
                 }}
               />
               {videoUrl && !isValidVideoUrl(videoUrl) && (
                 <p className="text-sm text-destructive">
-                  URL no válida. Soportamos YouTube y Facebook.
+                  URL no válida. Soportamos YouTube.
                 </p>
               )}
             </div>
@@ -648,9 +646,7 @@ export function MarkdownEditor({
                 if (videoUrl.trim() && isValidVideoUrl(videoUrl)) {
                   insertVideoMarkdown(videoUrl, videoTitle);
                 } else {
-                  alert(
-                    "Por favor, ingresa una URL válida de YouTube o Facebook"
-                  );
+                  alert("Por favor, ingresa una URL válida de YouTube");
                 }
               }}
               disabled={!videoUrl.trim() || !isValidVideoUrl(videoUrl)}

@@ -23,17 +23,11 @@ export function VideoEmbed({
   const videoInfo = parseVideoUrl(src);
 
   const aspectRatio = (height / width) * 100;
-  const platformName =
-    videoInfo.platform === "youtube"
-      ? "YouTube"
-      : videoInfo.platform === "facebook"
-      ? "Facebook"
-      : "Video";
 
   const VideoContainer = ({ children }: { children: React.ReactNode }) => (
     <div className="my-4 sm:my-6 w-full max-w-4xl mx-auto">
       <div
-        className="relative w-full overflow-hidden rounded-lg border border-stone-300 bg-stone-100 shadow-sm"
+        className="relative w-full overflow-hidden rounded-sm border border-stone-300 bg-stone-100 shadow-sm"
         style={{ paddingBottom: `${aspectRatio}%` }}
       >
         {children}
@@ -46,13 +40,14 @@ export function VideoEmbed({
     </div>
   );
 
-  if (!videoInfo.embedUrl) {
+  // Solo soportamos YouTube
+  if (!videoInfo.embedUrl || videoInfo.platform !== "youtube") {
     return (
       <div className="my-4 sm:my-6 w-full max-w-4xl mx-auto">
-        <div className="p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-lg text-center">
+        <div className="p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-sm text-center">
           <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 text-stone-400 mx-auto mb-3" />
           <p className="text-xs sm:text-sm font-medium text-stone-900 mb-2">
-            Video no soportado o URL inválida
+            Solo soportamos videos de YouTube
           </p>
           <code className="text-xs text-stone-600 bg-white px-2 sm:px-3 py-1 rounded border border-stone-200 break-all">
             {src}
@@ -88,7 +83,7 @@ export function VideoEmbed({
                 className="inline-flex items-center gap-1 sm:gap-2"
               >
                 <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                Abrir en {platformName}
+                Abrir en YouTube
               </a>
             </Button>
           </div>
@@ -133,7 +128,7 @@ export function VideoEmbed({
                   className="inline-flex items-center gap-1 sm:gap-2 min-h-[36px] px-3 sm:px-4 touch-manipulation"
                 >
                   <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                  Ver en {platformName}
+                  Ver en YouTube
                 </a>
               </Button>
             </div>
@@ -160,18 +155,16 @@ export function VideoEmbed({
   );
 }
 
-// Componente que maneja correctamente videos e imágenes sin conflictos de hidratación
 export function MarkdownVideo({ node, ...props }: any) {
   const { src, alt, title } = props;
   const videoInfo = parseVideoUrl(src || "");
 
-  // Si es imagen normal, la renderizamos sin wrapper
   if (videoInfo.platform === "unknown") {
     return (
       <>
         <img
           {...props}
-          className="w-full h-auto rounded-lg border border-stone-300"
+          className="w-full h-auto rounded-sm border border-stone-300"
           loading="lazy"
           style={{ display: "block", margin: "1.5rem 0" }}
         />
@@ -187,29 +180,21 @@ export function MarkdownVideo({ node, ...props }: any) {
     );
   }
 
-  // Para videos, renderizamos directamente el VideoEmbed sin wrappers problemáticos
   return <VideoEmbedInline src={src} title={alt || title} />;
 }
 
-// Versión inline del VideoEmbed para usar en markdown
 function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
   const [loadError, setLoadError] = useState(false);
   const [showIframe, setShowIframe] = useState(false);
   const videoInfo = parseVideoUrl(src);
 
   const aspectRatio = (315 / 560) * 100;
-  const platformName =
-    videoInfo.platform === "youtube"
-      ? "YouTube"
-      : videoInfo.platform === "facebook"
-      ? "Facebook"
-      : "Video";
 
-  if (!videoInfo.embedUrl) {
+  if (!videoInfo.embedUrl || videoInfo.platform !== "youtube") {
     return (
       <>
         <span
-          className="block w-full p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-lg text-center max-w-4xl mx-auto"
+          className="block w-full p-4 sm:p-6 bg-stone-50 border border-stone-300 rounded-sm text-center max-w-4xl mx-auto"
           style={{
             margin: "1rem 0",
             marginTop: "1.5rem",
@@ -218,7 +203,7 @@ function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
         >
           <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 text-stone-400 mx-auto mb-3" />
           <span className="text-xs sm:text-sm font-medium text-stone-900 mb-2 block">
-            Video no soportado o URL inválida
+            Solo soportamos videos de YouTube
           </span>
           <code className="text-xs text-stone-600 bg-white px-2 sm:px-3 py-1 rounded border border-stone-200 break-all">
             {src}
@@ -231,7 +216,7 @@ function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
   const videoContent = (
     <>
       <span
-        className="relative w-full overflow-hidden rounded-lg border border-stone-300 bg-stone-100 block shadow-sm"
+        className="relative w-full overflow-hidden rounded-sm border border-stone-300 bg-stone-100 block shadow-sm"
         style={{ paddingBottom: `${aspectRatio}%` }}
       >
         {loadError ? (
@@ -245,61 +230,22 @@ function VideoEmbedInline({ src, title }: { src: string; title?: string }) {
                 El video no está disponible debido a restricciones de privacidad
                 o no existe
               </span>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="text-xs sm:text-sm"
-              >
-                <a
-                  href={src}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 sm:gap-2"
-                >
-                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                  Abrir en {platformName}
-                </a>
-              </Button>
             </span>
           </span>
         ) : !showIframe ? (
-          <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50">
-            <span
-              className="p-3 sm:p-4 rounded-full bg-stone-200 hover:bg-stone-300 transition-colors cursor-pointer touch-manipulation active:bg-stone-400"
-              onClick={() => setShowIframe(true)}
-            >
+          <span
+            className="group absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-6 bg-stone-50 cursor-pointer"
+            onClick={() => setShowIframe(true)}
+          >
+            <span className="p-3 sm:p-4 rounded-full bg-stone-200 group-hover:bg-stone-300 transition-colors touch-manipulation group-active:bg-stone-400">
               <Play
                 className="h-10 w-10 sm:h-12 sm:w-12 text-stone-900"
                 fill="currentColor"
               />
             </span>
             <span className="text-center px-2">
-              <span className="flex flex-col gap-2 justify-center items-center">
-                <Button
-                  onClick={() => setShowIframe(true)}
-                  size="sm"
-                  className="inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm min-h-[36px] px-3 sm:px-4 w-full sm:w-auto touch-manipulation"
-                >
-                  <Play className="h-3 w-3 sm:h-4 sm:w-4" />
-                  Cargar Video
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="text-xs sm:text-sm w-full sm:w-auto"
-                >
-                  <a
-                    href={src}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 sm:gap-2 min-h-[36px] px-3 sm:px-4 touch-manipulation"
-                  >
-                    <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                    Ver en {platformName}
-                  </a>
-                </Button>
+              <span className="text-xs sm:text-sm text-stone-600 block">
+                Da clic para cargar el video
               </span>
             </span>
           </span>
