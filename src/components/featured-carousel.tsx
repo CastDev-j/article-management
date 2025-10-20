@@ -52,22 +52,31 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
     return () => clearInterval(interval);
   }, [api, isHovered]);
 
-  // Mouse events effect
+  // Mouse and touch events effect
   useEffect(() => {
     if (!api) {
       return;
     }
 
     const carouselElement = api.rootNode();
-    const handleMouseEnter = () => setIsHovered(true);
-    const handleMouseLeave = () => setIsHovered(false);
+    const handleInteractionStart = () => setIsHovered(true);
+    const handleInteractionEnd = () => setIsHovered(false);
 
-    carouselElement.addEventListener("mouseenter", handleMouseEnter);
-    carouselElement.addEventListener("mouseleave", handleMouseLeave);
+    // Mouse events
+    carouselElement.addEventListener("mouseenter", handleInteractionStart);
+    carouselElement.addEventListener("mouseleave", handleInteractionEnd);
+    
+    // Touch events
+    carouselElement.addEventListener("touchstart", handleInteractionStart);
+    carouselElement.addEventListener("touchend", handleInteractionEnd);
+    carouselElement.addEventListener("touchcancel", handleInteractionEnd);
 
     return () => {
-      carouselElement.removeEventListener("mouseenter", handleMouseEnter);
-      carouselElement.removeEventListener("mouseleave", handleMouseLeave);
+      carouselElement.removeEventListener("mouseenter", handleInteractionStart);
+      carouselElement.removeEventListener("mouseleave", handleInteractionEnd);
+      carouselElement.removeEventListener("touchstart", handleInteractionStart);
+      carouselElement.removeEventListener("touchend", handleInteractionEnd);
+      carouselElement.removeEventListener("touchcancel", handleInteractionEnd);
     };
   }, [api]);
 
