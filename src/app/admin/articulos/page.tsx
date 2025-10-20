@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default async function AdminArticulosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ 
+  searchParams: Promise<{
     page?: string;
     q?: string;
     categorias?: string;
@@ -54,7 +54,8 @@ export default async function AdminArticulosPage({
   const sortBy = params.sort || "publishedAt-desc";
 
   // Configurar filtros
-  const publishedBoolean = publishedFilter === "all" ? undefined : publishedFilter === "true";
+  const publishedBoolean =
+    publishedFilter === "all" ? undefined : publishedFilter === "true";
 
   const { articles, totalPages, total } = await getArticlesWithPagination({
     page: currentPage,
@@ -143,9 +144,25 @@ export default async function AdminArticulosPage({
               <Card key={article.id} className="flex flex-col justify-between">
                 <div>
                   <CardHeader>
+                    {article.imagen ? (
+                      <div className="mt-4">
+                        <img
+                          src={article.imagen}
+                          alt={article.titulo}
+                          className="w-full h-32 rounded-sm border border-stone-300 object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mt-4 flex items-center justify-center h-32 rounded-sm border border-stone-300 bg-muted">
+                        <p className="text-sm text-muted-foreground">
+                          Sin imagen
+                        </p>
+                      </div>
+                    )}
                     <div className="mb-2 flex items-start justify-between gap-2">
                       <h3 className="line-clamp-2 text-balance text-lg font-semibold">
-                        {article.titulo}
+                        {article.titulo || "Sin título"}
                       </h3>
                       <Badge
                         variant={article.publicado ? "default" : "secondary"}
@@ -155,12 +172,17 @@ export default async function AdminArticulosPage({
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {article.descripcion && (
+                    {article.descripcion ? (
                       <p className="line-clamp-3 text-pretty text-sm text-muted-foreground">
                         {article.descripcion}
                       </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground italic">
+                        Sin descripción
+                      </p>
                     )}
-                    {(article as any).articuloCategorias?.length > 0 && (
+
+                    {(article as any).articuloCategorias?.length > 0 ? (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {(article as any).articuloCategorias.map(
                           ({ categoria }: any) => (
@@ -169,6 +191,12 @@ export default async function AdminArticulosPage({
                             </Badge>
                           )
                         )}
+                      </div>
+                    ) : (
+                      <div className="mt-3">
+                        <p className="text-xs text-muted-foreground italic">
+                          Sin categorías asignadas
+                        </p>
                       </div>
                     )}
                   </CardContent>
